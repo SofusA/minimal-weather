@@ -94,11 +94,184 @@
 /* 2 */
 /***/ (function(module, exports) {
 
-	function sendDataToPebble(temperature) {
+	const ImageId = {
+	  IMAGE_QUESTION_DARK: 0,
+	  IMAGE_SUNNY_DARK: 1,
+	  IMAGE_CLEAR_NIGHT_DARK: 2,
+	  IMAGE_PARTLY_CLOUDY_DARK: 3,
+	  IMAGE_PARTLY_CLOUDY_NIGHT_DARK: 4,
+	  IMAGE_CLOUDY_DARK: 5,
+	  IMAGE_HEAVY_RAIN_DARK: 6,
+	  IMAGE_HEAVY_SNOW_DARK: 7,
+	  IMAGE_RAIN_SNOW_DARK: 8,   
+	  IMAGE_THUNDERSTORM_DARK: 9,
+	};
+	
+	const SYMBOL_TO_IMAGE_ID = {
+	  // Clear / fair
+	  clearsky_day: ImageId.IMAGE_SUNNY_DARK,
+	  clearsky_night: ImageId.IMAGE_CLEAR_NIGHT_DARK,
+	  clearsky_polartwilight: ImageId.IMAGE_CLEAR_NIGHT_DARK,
+	
+	  fair_day: ImageId.IMAGE_PARTLY_CLOUDY_DARK,
+	  fair_night: ImageId.IMAGE_PARTLY_CLOUDY_NIGHT_DARK,
+	  fair_polartwilight: ImageId.IMAGE_PARTLY_CLOUDY_NIGHT_DARK,
+	
+	  // Snow showers + thunder -> thunderstorm icon
+	  lightssnowshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightssnowshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightssnowshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Light snow showers -> snow
+	  lightsnowshowers_day: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  lightsnowshowers_night: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  lightsnowshowers_polartwilight: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	
+	  // Thunder mixes
+	  heavyrainandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavysnowandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  rainandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Heavy sleet showers + thunder -> thunder
+	  heavysleetshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavysleetshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavysleetshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Straight weather types
+	  heavysnow: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	
+	  // Heavy rain showers -> heavy rain
+	  heavyrainshowers_day: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  heavyrainshowers_night: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  heavyrainshowers_polartwilight: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	
+	  // Sleet types -> mixed precipitation icon
+	  lightsleet: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  heavyrain: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	
+	  // Light rain showers -> heavy rain (you can switch to a lighter rain icon if you add one)
+	  lightrainshowers_day: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  lightrainshowers_night: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  lightrainshowers_polartwilight: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	
+	  // Sleet showers (heavy/light) -> mixed precipitation
+	  heavysleetshowers_day: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  heavysleetshowers_night: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  heavysleetshowers_polartwilight: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  lightsleetshowers_day: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  lightsleetshowers_night: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  lightsleetshowers_polartwilight: ImageId.IMAGE_RAIN_SNOW_DARK,
+	
+	  // Snow
+	  snow: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	
+	  // Heavy rain showers + thunder
+	  heavyrainshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavyrainshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavyrainshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Snow showers
+	  snowshowers_day: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  snowshowers_night: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  snowshowers_polartwilight: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	
+	  // Fog -> cloudy fallback (or add a dedicated fog icon later)
+	  fog: ImageId.IMAGE_CLOUDY_DARK,
+	
+	  // Snow showers + thunder
+	  snowshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  snowshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  snowshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Light snow + thunder
+	  lightsnowandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Heavy sleet + thunder
+	  heavysleetandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Simple rain/snow
+	  lightrain: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  rainshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  rainshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  rainshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  rain: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  lightsnow: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	
+	  // Light rain showers + thunder
+	  lightrainshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightrainshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightrainshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // More sleet variants
+	  heavysleet: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  sleetandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightrainandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  sleet: ImageId.IMAGE_RAIN_SNOW_DARK,
+	
+	  // Light sleet showers + thunder
+	  lightssleetshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightssleetshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  lightssleetshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Light sleet + thunder
+	  lightsleetandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Partly cloudy
+	  partlycloudy_day: ImageId.IMAGE_PARTLY_CLOUDY_DARK,
+	  partlycloudy_night: ImageId.IMAGE_PARTLY_CLOUDY_NIGHT_DARK,
+	  partlycloudy_polartwilight: ImageId.IMAGE_PARTLY_CLOUDY_NIGHT_DARK,
+	
+	  // Sleet showers + thunder
+	  sleetshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  sleetshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  sleetshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Rain showers
+	  rainshowers_day: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  rainshowers_night: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	  rainshowers_polartwilight: ImageId.IMAGE_HEAVY_RAIN_DARK,
+	
+	  // Snow + thunder
+	  snowandthunder: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Sleet showers
+	  sleetshowers_day: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  sleetshowers_night: ImageId.IMAGE_RAIN_SNOW_DARK,
+	  sleetshowers_polartwilight: ImageId.IMAGE_RAIN_SNOW_DARK,
+	
+	  // Cloudy
+	  cloudy: ImageId.IMAGE_CLOUDY_DARK,
+	
+	  // Heavy snow showers + thunder
+	  heavysnowshowersandthunder_day: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavysnowshowersandthunder_night: ImageId.IMAGE_THUNDERSTORM_DARK,
+	  heavysnowshowersandthunder_polartwilight: ImageId.IMAGE_THUNDERSTORM_DARK,
+	
+	  // Heavy snow showers
+	  heavysnowshowers_day: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  heavysnowshowers_night: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	  heavysnowshowers_polartwilight: ImageId.IMAGE_HEAVY_SNOW_DARK,
+	};
+	
+	// Public function: map API symbol -> numeric image id.
+	// Provides a safe fallback if the symbol is missing/unknown.
+	function getImageIdFromSymbol(symbol) {
+	  if (!symbol || typeof symbol !== 'string') {
+	    return ImageId.IMAGE_QUESTION_DARK;
+	  }
+	
+	  const key = symbol.trim();
+	  return SYMBOL_TO_IMAGE_ID[key];
+	}
+	
+	function sendDataToPebble(temperature, icon_code) {
 	  console.log('Sending data to pebble.');
+	
+	  var icon = getImageIdFromSymbol(icon_code);
 	
 	  var message = {
 	    'WEATHER_TEMPERATURE': temperature,
+	    'WEATHER_ICON': icon
 	  };
 	
 	  Pebble.sendAppMessage(message,
@@ -134,9 +307,11 @@
 	          const temp =
 	            data.properties.timeseries[0].data.instant.details.air_temperature;
 	
+	          const image = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+	
 	          var rounded = Math.round(temp);
 	          console.log("Parsed temp: " + rounded);
-	          sendDataToPebble(rounded);
+	          sendDataToPebble(rounded, image);
 	          
 	        } catch (err) {
 	          console.log("JSON parse error: " + err);

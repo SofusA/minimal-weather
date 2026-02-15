@@ -1,13 +1,13 @@
-# project  configured on Sun Feb 15 10:05:20 2026 by
+# project  configured on Sun Feb 15 11:46:45 2026 by
 # waf 2.1.4 (abi 20, python 30d0cf0 on linux)
 # using /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/waf configure
 #
 ----------------------------------------
 Setting top to
-/var/home/sofusa/pebble/weather
+/var/home/sofusa/git/watchface
 ----------------------------------------
 Setting out to
-/var/home/sofusa/pebble/weather/build
+/var/home/sofusa/git/watchface/build
 ----------------------------------------
 Checking for program 'webpack'
 /var/home/sofusa/.pebble-sdk/SDKs/current/node_modules/.bin/webpack
@@ -370,10 +370,10 @@ int main(int argc, char **argv) {
 <==
 [1/2] Compiling [32mdiorite | c: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/test.c -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o[0m
 
-['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/diorite/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Idiorite', '-I../diorite', '-DRELEASE', '-DPBL_PLATFORM_DIORITE', '-DPBL_BW', '-DPBL_RECT', '-DPBL_MICROPHONE', '-DPBL_HEALTH', '-DPBL_SMARTSTRAP', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
+['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/diorite/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Idiorite', '-I../diorite', '-DRELEASE', '-DPBL_PLATFORM_DIORITE', '-DPBL_BW', '-DPBL_RECT', '-DPBL_MICROPHONE', '-DPBL_HEALTH', '-DPBL_SMARTSTRAP', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
 [2/2] Linking [33mdiorite | cshlib: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so[0m
 
-['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
 yes
 ----------------------------------------------------
 Found Pebble SDK for basalt in:
@@ -733,10 +733,10 @@ int main(int argc, char **argv) {
 <==
 [1/2] Compiling [32mbasalt | c: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/test.c -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o[0m
 
-['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/basalt/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Ibasalt', '-I../basalt', '-DRELEASE', '-DPBL_PLATFORM_BASALT', '-DPBL_COLOR', '-DPBL_RECT', '-DPBL_MICROPHONE', '-DPBL_SMARTSTRAP', '-DPBL_HEALTH', '-DPBL_COMPASS', '-DPBL_SMARTSTRAP_POWER', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
+['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/basalt/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Ibasalt', '-I../basalt', '-DRELEASE', '-DPBL_PLATFORM_BASALT', '-DPBL_COLOR', '-DPBL_RECT', '-DPBL_MICROPHONE', '-DPBL_SMARTSTRAP', '-DPBL_HEALTH', '-DPBL_COMPASS', '-DPBL_SMARTSTRAP_POWER', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
 [2/2] Linking [33mbasalt | cshlib: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so[0m
 
-['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
 yes
 ----------------------------------------------------
 Found Pebble SDK for aplite in:
@@ -1096,8 +1096,8 @@ int main(int argc, char **argv) {
 <==
 [1/2] Compiling [32maplite | c: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/test.c -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o[0m
 
-['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Iaplite', '-I../aplite', '-DRELEASE', '-DPBL_PLATFORM_APLITE', '-DPBL_BW', '-DPBL_RECT', '-DPBL_COMPASS', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
+['arm-none-eabi-gcc', '-fPIC', '-I../../../../../.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/include', '-I.', '-I..', '-Iinclude', '-I../include', '-Isrc', '-I../src', '-Iaplite', '-I../aplite', '-DRELEASE', '-DPBL_PLATFORM_APLITE', '-DPBL_BW', '-DPBL_RECT', '-DPBL_COMPASS', '-DPBL_DISPLAY_WIDTH=144', '-DPBL_DISPLAY_HEIGHT=168', '-DPBL_SDK_3', '../test.c', '-c', '-o/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o']
 [2/2] Linking [33maplite | cshlib: build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/test.c.1.o -> build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so[0m
 
-['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/pebble/weather/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+['arm-none-eabi-gcc', '-shared', 'test.c.1.o', '-o', '/var/home/sofusa/git/watchface/build/.conf_check_fe09c04780f3cfcccc06b3ffc4ded4f4/testbuild/libtestprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic']
 yes

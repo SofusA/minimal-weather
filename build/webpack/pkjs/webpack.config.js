@@ -6,7 +6,7 @@ const isSandbox = false;
 
 // Array with absolute file path strings
 const entryFilenames = ["_pkjs_shared_additions.js",
-"/var/home/sofusa/pebble/weather/src/pkjs/index.js"];
+"/var/home/sofusa/git/watchface/src/pkjs/index.js"];
 
 // folder path string
 const outputPath = "build";
@@ -18,10 +18,10 @@ const outputFilename = "pebble-js-app.js";
 const resolveRoots = ["/var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/common/include",
 "/var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/common/tools/webpack",
 "/var/home/sofusa/.pebble-sdk/SDKs/current/node_modules",
-"/var/home/sofusa/pebble/weather/build/js"];
+"/var/home/sofusa/git/watchface/build/js"];
 
 // Object, { alias1: 'path1', ... }
-const resolveAliases = {"app_package.json": "/var/home/sofusa/pebble/weather/package.json"};
+const resolveAliases = {"app_package.json": "/var/home/sofusa/git/watchface/package.json"};
 
 // null or Object with key 'sourceMapFilename'
 const sourceMapConfig = {"sourceMapFilename": "pebble-js-app.js.map"};

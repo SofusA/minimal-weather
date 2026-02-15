@@ -21,6 +21,7 @@
       "watchface": true
     },
     "messageKeys": [
+      "WEATHER_ICON",
       "WEATHER_TEMPERATURE"
     ],
     "capabilities": [
@@ -30,13 +31,13 @@
       "media": [
         {
           "type": "bitmap",
-          "name": "IMAGE_SUNNY_DARK",
-          "file": "images/sunny_day_dark.png"
+          "name": "IMAGE_QUESTION_DARK",
+          "file": "images/question_dark.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_SUNNY_LIGHT",
-          "file": "images/sunny_day_light.png"
+          "name": "IMAGE_SUNNY_DARK",
+          "file": "images/sunny_day_dark.png"
         },
         {
           "type": "bitmap",
@@ -45,18 +46,8 @@
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_PARTLY_CLOUDY_LIGHT",
-          "file": "images/partly_cloudy_light.png"
-        },
-        {
-          "type": "bitmap",
           "name": "IMAGE_PARTLY_CLOUDY_NIGHT_DARK",
           "file": "images/partly_cloudy_night_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_PARTLY_CLOUDY_NIGHT_LIGHT",
-          "file": "images/partly_cloudy_night_light.png"
         },
         {
           "type": "bitmap",
@@ -65,38 +56,8 @@
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_CLOUDY_LIGHT",
-          "file": "images/cloudy_weather_light.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_LIGHT_RAIN_DARK",
-          "file": "images/light_rain_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_LIGHT_RAIN_LIGHT",
-          "file": "images/light_rain_light.png"
-        },
-        {
-          "type": "bitmap",
           "name": "IMAGE_HEAVY_RAIN_DARK",
           "file": "images/heavy_rain_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_HEAVY_RAIN_LIGHT",
-          "file": "images/heavy_rain_light.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_LIGHT_SNOW_DARK",
-          "file": "images/light_snow_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_LIGHT_SNOW_LIGHT",
-          "file": "images/light_snow_light.png"
         },
         {
           "type": "bitmap",
@@ -105,18 +66,8 @@
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_HEAVY_SNOW_LIGHT",
-          "file": "images/heavy_snow_light.png"
-        },
-        {
-          "type": "bitmap",
           "name": "IMAGE_RAIN_SNOW_DARK",
           "file": "images/raining_and_snowing_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_RAIN_SNOW_LIGHT",
-          "file": "images/raining_and_snowing_light.png"
         },
         {
           "type": "bitmap",
@@ -125,18 +76,8 @@
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_THUNDERSTORM_LIGHT",
-          "file": "images/thunderstorm_light.png"
-        },
-        {
-          "type": "bitmap",
           "name": "IMAGE_CLEAR_NIGHT_DARK",
           "file": "images/clear_night_dark.png"
-        },
-        {
-          "type": "bitmap",
-          "name": "IMAGE_CLEAR_NIGHT_LIGHT",
-          "file": "images/clear_night_light.png"
         }
       ]
     }
