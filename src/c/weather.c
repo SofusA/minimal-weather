@@ -5,6 +5,9 @@ static BitmapLayer *s_icon_layer  = NULL;
 static GBitmap     *s_icon_bitmap = NULL;
 static void        (*s_on_temp)(const char *temp_text) = NULL;
 
+static void        (*s_on_uv)(int32_t uv) = NULL;
+static void        (*s_on_precip)(int32_t mm) = NULL;
+
 static const uint32_t WEATHER_RES_IDS[] = {
   RESOURCE_ID_IMAGE_QUESTION_DARK,            // 0
   RESOURCE_ID_IMAGE_SUNNY_DARK,               // 1
@@ -48,21 +51,35 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   if (t) {
     static char s_temp_buffer[8];
     snprintf(s_temp_buffer, sizeof(s_temp_buffer), "%d°", (int)t->value->int32);
-
-    if (s_on_temp) {
-      s_on_temp(s_temp_buffer); 
-    }
+    if (s_on_temp) s_on_temp(s_temp_buffer);
   }
 
   Tuple *icon_t = dict_find(iter, MESSAGE_KEY_WEATHER_ICON);
   if (icon_t) {
     set_weather_icon(icon_t->value->int32);
   }
+
+  Tuple *uv_t = dict_find(iter, MESSAGE_KEY_WEATHER_UV);
+  if (uv_t && s_on_uv) {
+    s_on_uv(uv_t->value->int32);
+  }
+
+  Tuple *precip_t = dict_find(iter, MESSAGE_KEY_WEATHER_PRECIPITATION);
+  if (precip_t && s_on_precip) {
+    s_on_precip(precip_t->value->int32);
+  }
 }
 
-void weather_init(BitmapLayer *icon_layer, void (*on_temp_cb)(const char *temp_text)) {
+void weather_init(
+  BitmapLayer *icon_layer,
+  void (*on_temp_cb)(const char *temp_text),
+  void (*on_uv_cb)(int32_t uv),
+  void (*on_precip_cb)(int32_t mm)
+) {
   s_icon_layer = icon_layer;
-  s_on_temp = on_temp_cb;
+  s_on_temp    = on_temp_cb;
+  s_on_uv      = on_uv_cb;      
+  s_on_precip  = on_precip_cb;  
 
   set_weather_icon(0);
 }
@@ -74,4 +91,6 @@ void weather_deinit(void) {
   }
   s_icon_layer = NULL;
   s_on_temp = NULL;
+  s_on_uv = NULL;
+  s_on_precip = NULL;
 }

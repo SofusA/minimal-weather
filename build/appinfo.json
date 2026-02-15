@@ -13,7 +13,9 @@
     },
     "messageKeys": {
         "WEATHER_ICON": 10000,
-        "WEATHER_TEMPERATURE": 10001
+        "WEATHER_TEMPERATURE": 10001,
+        "WEATHER_UV": 10002,
+        "WEATHER_PRECIPITATION": 10003
     },
     "capabilities": [
         "location"
@@ -79,6 +81,8 @@
     "companyName": "sofusa",
     "appKeys": {
         "WEATHER_ICON": 10000,
-        "WEATHER_TEMPERATURE": 10001
+        "WEATHER_TEMPERATURE": 10001,
+        "WEATHER_UV": 10002,
+        "WEATHER_PRECIPITATION": 10003
     }
 }

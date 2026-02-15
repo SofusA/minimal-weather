@@ -264,14 +264,16 @@
 	  return SYMBOL_TO_IMAGE_ID[key];
 	}
 	
-	function sendDataToPebble(temperature, icon_code) {
+	function sendDataToPebble(temperature, icon_code, uv, precipitation) {
 	  console.log('Sending data to pebble.');
 	
 	  var icon = getImageIdFromSymbol(icon_code);
 	
 	  var message = {
 	    'WEATHER_TEMPERATURE': temperature,
-	    'WEATHER_ICON': icon
+	    'WEATHER_ICON': icon,
+	    'WEATHER_UV': uv,
+	    'WEATHER_PRECIPITATION': precipitation
 	  };
 	
 	  Pebble.sendAppMessage(message,
@@ -286,7 +288,7 @@
 	
 	function fetchWeather(lat, lon) {
 	  const url =
-	    "https://api.met.no/weatherapi/locationforecast/2.0/compact" +
+	    "https://api.met.no/weatherapi/locationforecast/2.0/complete" +
 	    "?lat=" + lat + "&lon=" + lon;
 	
 	  console.log("Fetching weather: " + url);
@@ -307,11 +309,12 @@
 	          const temp =
 	            data.properties.timeseries[0].data.instant.details.air_temperature;
 	
-	          const image = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+	          const uv = data.properties.timeseries[0].data.instant.details.ultraviolet_index_clear_sky;
 	
-	          var rounded = Math.round(temp);
-	          console.log("Parsed temp: " + rounded);
-	          sendDataToPebble(rounded, image);
+	          const image = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+	          const precipitation = data.properties.timeseries[0].data.next_6_hours.details.precipitation_amount;
+	
+	          sendDataToPebble(Math.round(temp), image, Math.round(uv), Math.round(precipitation));
 	          
 	        } catch (err) {
 	          console.log("JSON parse error: " + err);

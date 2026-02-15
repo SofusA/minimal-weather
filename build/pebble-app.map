@@ -299,10 +299,6 @@ Discarded input sections
                 0x0000000000000000        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
  .text.layer_set_clips
                 0x0000000000000000        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
- .text.layer_set_frame
-                0x0000000000000000        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
- .text.layer_set_hidden
-                0x0000000000000000        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
  .text.light_enable
                 0x0000000000000000        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
  .text.light_enable_interaction
@@ -1179,7 +1175,7 @@ LOAD /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib
  .note.gnu.build-id
                 0x0000000000000084       0x24 linker stubs
 
-.text           0x00000000000000a8      0xc0a
+.text           0x00000000000000a8      0xfc2
  *(.text)
  .text          0x00000000000000a8       0x14 /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
  *(.text.*)
@@ -1190,271 +1186,305 @@ LOAD /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib
  .text.weather_on_temp
                 0x0000000000000198       0x2c src/c/watchface.c.25.o
  .text.window_unload
-                0x00000000000001c4       0x60 src/c/watchface.c.25.o
+                0x00000000000001c4       0x90 src/c/watchface.c.25.o
+ .text.layout_top_row
+                0x0000000000000254      0x190 src/c/watchface.c.25.o
  .text.window_load
-                0x0000000000000224      0x218 src/c/watchface.c.25.o
+                0x00000000000003e4      0x308 src/c/watchface.c.25.o
+ .text.weather_on_precip
+                0x00000000000006ec       0x40 src/c/watchface.c.25.o
+ .text.weather_on_uv
+                0x000000000000072c       0x10 src/c/watchface.c.25.o
  .text.weekday_update_proc
-                0x000000000000043c      0x1a4 src/c/watchface.c.25.o
+                0x000000000000073c      0x1a4 src/c/watchface.c.25.o
  .text.frame_update_proc
-                0x00000000000005e0       0xa8 src/c/watchface.c.25.o
+                0x00000000000008e0       0xac src/c/watchface.c.25.o
  .text.battery_update_proc
-                0x0000000000000688       0x6c src/c/watchface.c.25.o
+                0x000000000000098c       0x6c src/c/watchface.c.25.o
  .text.startup.main
-                0x00000000000006f4       0x84 src/c/watchface.c.25.o
-                0x00000000000006f4                main
+                0x00000000000009f8       0x84 src/c/watchface.c.25.o
+                0x00000000000009f8                main
  .text.set_weather_icon
-                0x0000000000000778       0x78 src/c/weather.c.25.o
-                0x0000000000000778                set_weather_icon
+                0x0000000000000a7c       0x78 src/c/weather.c.25.o
+                0x0000000000000a7c                set_weather_icon
  .text.inbox_received_handler
-                0x00000000000007f0       0x6c src/c/weather.c.25.o
-                0x00000000000007f0                inbox_received_handler
+                0x0000000000000af4       0xb0 src/c/weather.c.25.o
+                0x0000000000000af4                inbox_received_handler
  .text.weather_init
-                0x000000000000085c       0x1c src/c/weather.c.25.o
-                0x000000000000085c                weather_init
+                0x0000000000000ba4       0x34 src/c/weather.c.25.o
+                0x0000000000000ba4                weather_init
  .text.weather_deinit
-                0x0000000000000878       0x30 src/c/weather.c.25.o
-                0x0000000000000878                weather_deinit
+                0x0000000000000bd8       0x44 src/c/weather.c.25.o
+                0x0000000000000bd8                weather_deinit
  .text.app_event_loop
-                0x00000000000008a8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008a8                app_event_loop
+                0x0000000000000c1c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c1c                app_event_loop
  .text.app_message_open
-                0x00000000000008b4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008b4                app_message_open
+                0x0000000000000c28        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c28                app_message_open
  .text.battery_state_service_peek
-                0x00000000000008c0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008c0                battery_state_service_peek
+                0x0000000000000c34        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c34                battery_state_service_peek
  .text.bitmap_layer_create
-                0x00000000000008cc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008cc                bitmap_layer_create
+                0x0000000000000c40        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c40                bitmap_layer_create
  .text.bitmap_layer_destroy
-                0x00000000000008d8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008d8                bitmap_layer_destroy
+                0x0000000000000c4c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c4c                bitmap_layer_destroy
  .text.bitmap_layer_get_layer
-                0x00000000000008e4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008e4                bitmap_layer_get_layer
+                0x0000000000000c58        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c58                bitmap_layer_get_layer
  .text.bitmap_layer_set_bitmap
-                0x00000000000008f0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008f0                bitmap_layer_set_bitmap
+                0x0000000000000c64        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c64                bitmap_layer_set_bitmap
  .text.bitmap_layer_set_compositing_mode
-                0x00000000000008fc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000008fc                bitmap_layer_set_compositing_mode
+                0x0000000000000c70        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c70                bitmap_layer_set_compositing_mode
  .text.dict_find
-                0x0000000000000908        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000908                dict_find
+                0x0000000000000c7c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c7c                dict_find
  .text.fonts_get_system_font
-                0x0000000000000914        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000914                fonts_get_system_font
+                0x0000000000000c88        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c88                fonts_get_system_font
  .text.gbitmap_create_with_resource
-                0x0000000000000920        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000920                gbitmap_create_with_resource
+                0x0000000000000c94        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000c94                gbitmap_create_with_resource
  .text.gbitmap_destroy
-                0x000000000000092c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x000000000000092c                gbitmap_destroy
+                0x0000000000000ca0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000ca0                gbitmap_destroy
  .text.graphics_draw_rect
-                0x0000000000000938        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000938                graphics_draw_rect
+                0x0000000000000cac        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cac                graphics_draw_rect
  .text.graphics_draw_round_rect
-                0x0000000000000944        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000944                graphics_draw_round_rect
+                0x0000000000000cb8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cb8                graphics_draw_round_rect
  .text.graphics_fill_rect
-                0x0000000000000950        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000950                graphics_fill_rect
+                0x0000000000000cc4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cc4                graphics_fill_rect
  .text.layer_add_child
-                0x000000000000095c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x000000000000095c                layer_add_child
+                0x0000000000000cd0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cd0                layer_add_child
  .text.layer_create
-                0x0000000000000968        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000968                layer_create
+                0x0000000000000cdc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cdc                layer_create
  .text.layer_destroy
-                0x0000000000000974        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000974                layer_destroy
+                0x0000000000000ce8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000ce8                layer_destroy
  .text.layer_get_bounds
-                0x0000000000000980        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000980                layer_get_bounds
+                0x0000000000000cf4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000cf4                layer_get_bounds
+ .text.layer_set_frame
+                0x0000000000000d00        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d00                layer_set_frame
+ .text.layer_set_hidden
+                0x0000000000000d0c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d0c                layer_set_hidden
  .text.layer_set_update_proc
-                0x000000000000098c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x000000000000098c                layer_set_update_proc
- .text.memset   0x0000000000000998        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000998                memset
+                0x0000000000000d18        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d18                layer_set_update_proc
+ .text.memset   0x0000000000000d24        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d24                memset
  .text.snprintf
-                0x00000000000009a4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009a4                snprintf
+                0x0000000000000d30        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d30                snprintf
  .text.strftime
-                0x00000000000009b0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009b0                strftime
+                0x0000000000000d3c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d3c                strftime
  .text.tick_timer_service_subscribe
-                0x00000000000009bc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009bc                tick_timer_service_subscribe
+                0x0000000000000d48        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d48                tick_timer_service_subscribe
  .text.window_create
-                0x00000000000009c8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009c8                window_create
+                0x0000000000000d54        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d54                window_create
  .text.window_destroy
-                0x00000000000009d4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009d4                window_destroy
+                0x0000000000000d60        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d60                window_destroy
  .text.window_get_root_layer
-                0x00000000000009e0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009e0                window_get_root_layer
+                0x0000000000000d6c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d6c                window_get_root_layer
  .text.window_set_window_handlers
-                0x00000000000009ec        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009ec                window_set_window_handlers
+                0x0000000000000d78        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d78                window_set_window_handlers
  .text.window_stack_push
-                0x00000000000009f8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x00000000000009f8                window_stack_push
+                0x0000000000000d84        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d84                window_stack_push
  .text.app_message_register_inbox_received
-                0x0000000000000a04        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a04                app_message_register_inbox_received
+                0x0000000000000d90        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d90                app_message_register_inbox_received
  .text.graphics_draw_text
-                0x0000000000000a10        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a10                graphics_draw_text
+                0x0000000000000d9c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000d9c                graphics_draw_text
  .text.graphics_text_layout_get_content_size
-                0x0000000000000a1c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a1c                graphics_text_layout_get_content_size
+                0x0000000000000da8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000da8                graphics_text_layout_get_content_size
  .text.bitmap_layer_set_background_color
-                0x0000000000000a28        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a28                bitmap_layer_set_background_color
+                0x0000000000000db4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000db4                bitmap_layer_set_background_color
  .text.graphics_context_set_fill_color
-                0x0000000000000a34        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a34                graphics_context_set_fill_color
+                0x0000000000000dc0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000dc0                graphics_context_set_fill_color
  .text.graphics_context_set_stroke_color
-                0x0000000000000a40        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a40                graphics_context_set_stroke_color
+                0x0000000000000dcc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000dcc                graphics_context_set_stroke_color
  .text.graphics_context_set_text_color
-                0x0000000000000a4c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a4c                graphics_context_set_text_color
+                0x0000000000000dd8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000dd8                graphics_context_set_text_color
  .text.window_set_background_color
-                0x0000000000000a58        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a58                window_set_background_color
+                0x0000000000000de4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000de4                window_set_background_color
  .text.localtime
-                0x0000000000000a64        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a64                localtime
+                0x0000000000000df0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000df0                localtime
  .text.text_layer_create
-                0x0000000000000a70        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a70                text_layer_create
+                0x0000000000000dfc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000dfc                text_layer_create
  .text.text_layer_destroy
-                0x0000000000000a7c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a7c                text_layer_destroy
+                0x0000000000000e08        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e08                text_layer_destroy
  .text.text_layer_get_layer
-                0x0000000000000a88        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a88                text_layer_get_layer
+                0x0000000000000e14        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e14                text_layer_get_layer
  .text.text_layer_set_background_color
-                0x0000000000000a94        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000a94                text_layer_set_background_color
+                0x0000000000000e20        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e20                text_layer_set_background_color
  .text.text_layer_set_font
-                0x0000000000000aa0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000aa0                text_layer_set_font
+                0x0000000000000e2c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e2c                text_layer_set_font
  .text.text_layer_set_text
-                0x0000000000000aac        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000aac                text_layer_set_text
+                0x0000000000000e38        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e38                text_layer_set_text
  .text.text_layer_set_text_alignment
-                0x0000000000000ab8        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000ab8                text_layer_set_text_alignment
+                0x0000000000000e44        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e44                text_layer_set_text_alignment
  .text.text_layer_set_text_color
-                0x0000000000000ac4        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000ac4                text_layer_set_text_color
- .text.time     0x0000000000000ad0        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000ad0                time
+                0x0000000000000e50        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e50                text_layer_set_text_color
+ .text.time     0x0000000000000e5c        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e5c                time
  .text.grect_inset
-                0x0000000000000adc        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
-                0x0000000000000adc                grect_inset
+                0x0000000000000e68        0xc /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+                0x0000000000000e68                grect_inset
  *(.rodata)
- .rodata        0x0000000000000ae8       0x28 src/c/watchface.c.25.o
+ .rodata        0x0000000000000e74       0x30 src/c/watchface.c.25.o
  *(.rodata*)
  .rodata.str1.1
-                0x0000000000000b10       0x74 src/c/watchface.c.25.o
-                                         0x7a (size before relaxing)
+                0x0000000000000ea4       0x96 src/c/watchface.c.25.o
+                                         0x9c (size before relaxing)
+ *fill*         0x0000000000000f3a        0x2 
  .rodata.WEATHER_RES_IDS
-                0x0000000000000b84       0x28 src/c/weather.c.25.o
+                0x0000000000000f3c       0x28 src/c/weather.c.25.o
  .rodata.str1.1
-                0x0000000000000bac        0x5 src/c/weather.c.25.o
+                0x0000000000000f64        0x5 src/c/weather.c.25.o
  .rodata._ctype_
-                0x0000000000000bb1      0x101 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
-                0x0000000000000bb1                _ctype_
+                0x0000000000000f69      0x101 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+                0x0000000000000f69                _ctype_
 
-.glue_7         0x0000000000000cb4        0x0
+.glue_7         0x000000000000106c        0x0
  .glue_7        0x0000000000000000        0x0 linker stubs
 
-.glue_7t        0x0000000000000cb4        0x0
+.glue_7t        0x000000000000106c        0x0
  .glue_7t       0x0000000000000000        0x0 linker stubs
 
-.vfp11_veneer   0x0000000000000cb4        0x0
+.vfp11_veneer   0x000000000000106c        0x0
  .vfp11_veneer  0x0000000000000000        0x0 linker stubs
 
-.v4_bx          0x0000000000000cb4        0x0
+.v4_bx          0x000000000000106c        0x0
  .v4_bx         0x0000000000000000        0x0 linker stubs
 
-.iplt           0x0000000000000cb4        0x0
+.iplt           0x000000000000106c        0x0
  .iplt          0x0000000000000000        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.rel.dyn        0x0000000000000cb4        0x0
+.rel.dyn        0x000000000000106c        0x0
  .rel.iplt      0x0000000000000000        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
  .rel.got       0x0000000000000000        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.data           0x0000000000000cb4       0x34
+.data           0x000000000000106c       0x44
  *(.data)
- .data          0x0000000000000cb4        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crti.o
- .data          0x0000000000000cb4        0x4 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
-                0x0000000000000cb4                __dso_handle
- .data          0x0000000000000cb8       0x1c src/c/watchface.c.25.o
- .data          0x0000000000000cd4        0x0 src/c/weather.c.25.o
- .data          0x0000000000000cd4        0x0 aplite/appinfo.auto.c.25.o
- .data          0x0000000000000cd4        0x0 aplite/src/resource_ids.auto.c.25.o
- .data          0x0000000000000cd4        0x0 src/message_keys.auto.c.25.o
- .data          0x0000000000000cd4        0x0 /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
- .data          0x0000000000000cd4        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
- .data          0x0000000000000cd4        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
- .data          0x0000000000000cd4        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
+ .data          0x000000000000106c        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crti.o
+ .data          0x000000000000106c        0x4 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
+                0x000000000000106c                __dso_handle
+ .data          0x0000000000001070       0x1c src/c/watchface.c.25.o
+ .data          0x000000000000108c        0x0 src/c/weather.c.25.o
+ .data          0x000000000000108c        0x0 aplite/appinfo.auto.c.25.o
+ .data          0x000000000000108c        0x0 aplite/src/resource_ids.auto.c.25.o
+ .data          0x000000000000108c        0x0 src/message_keys.auto.c.25.o
+ .data          0x000000000000108c        0x0 /var/home/sofusa/.pebble-sdk/SDKs/current/sdk-core/pebble/aplite/lib/libpebble.a(tmp7jpKUopebble.o)
+ .data          0x000000000000108c        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+ .data          0x000000000000108c        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
+ .data          0x000000000000108c        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
  *(.data.*)
+ .data.s_last_uv
+                0x000000000000108c        0x4 src/c/watchface.c.25.o
+ .data.s_last_precip
+                0x0000000000001090        0x4 src/c/watchface.c.25.o
  .data.latest_temp
-                0x0000000000000cd4        0x8 src/c/watchface.c.25.o
+                0x0000000000001094        0x8 src/c/watchface.c.25.o
  .data.MESSAGE_KEY_WEATHER_TEMPERATURE
-                0x0000000000000cdc        0x4 src/message_keys.auto.c.25.o
-                0x0000000000000cdc                MESSAGE_KEY_WEATHER_TEMPERATURE
+                0x000000000000109c        0x4 src/message_keys.auto.c.25.o
+                0x000000000000109c                MESSAGE_KEY_WEATHER_TEMPERATURE
+ .data.MESSAGE_KEY_WEATHER_PRECIPITATION
+                0x00000000000010a0        0x4 src/message_keys.auto.c.25.o
+                0x00000000000010a0                MESSAGE_KEY_WEATHER_PRECIPITATION
  .data.MESSAGE_KEY_WEATHER_ICON
-                0x0000000000000ce0        0x4 src/message_keys.auto.c.25.o
-                0x0000000000000ce0                MESSAGE_KEY_WEATHER_ICON
+                0x00000000000010a4        0x4 src/message_keys.auto.c.25.o
+                0x00000000000010a4                MESSAGE_KEY_WEATHER_ICON
+ .data.MESSAGE_KEY_WEATHER_UV
+                0x00000000000010a8        0x4 src/message_keys.auto.c.25.o
+                0x00000000000010a8                MESSAGE_KEY_WEATHER_UV
  .data.__ctype_ptr__
-                0x0000000000000ce4        0x4 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
-                0x0000000000000ce4                __ctype_ptr__
+                0x00000000000010ac        0x4 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+                0x00000000000010ac                __ctype_ptr__
 
-.igot.plt       0x0000000000000ce8        0x0
+.igot.plt       0x00000000000010b0        0x0
  .igot.plt      0x0000000000000000        0x0 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.got            0x0000000000000ce8       0x10
- .got           0x0000000000000ce8       0x10 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
+.got            0x00000000000010b0       0x18
+ .got           0x00000000000010b0       0x18 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.got.plt        0x0000000000000cf8        0xc
- .got.plt       0x0000000000000cf8        0xc /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
-                0x0000000000000cf8                _GLOBAL_OFFSET_TABLE_
+.got.plt        0x00000000000010c8        0xc
+ .got.plt       0x00000000000010c8        0xc /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
+                0x00000000000010c8                _GLOBAL_OFFSET_TABLE_
 
-.bss            0x0000000000000d04       0x50
+.bss            0x00000000000010d4       0x74
  *(.bss)
  *(.bss.*)
  .bss.icon_layer
-                0x0000000000000d04        0x4 src/c/watchface.c.25.o
+                0x00000000000010d4        0x4 src/c/watchface.c.25.o
  .bss.date_temp_buffer
-                0x0000000000000d08       0x18 src/c/watchface.c.25.o
+                0x00000000000010d8       0x18 src/c/watchface.c.25.o
  .bss.weekday_layer
-                0x0000000000000d20        0x4 src/c/watchface.c.25.o
+                0x00000000000010f0        0x4 src/c/watchface.c.25.o
+ .bss.precip_layer
+                0x00000000000010f4        0x4 src/c/watchface.c.25.o
  .bss.time_buffer
-                0x0000000000000d24        0x6 src/c/watchface.c.25.o
- *fill*         0x0000000000000d2a        0x2 
- .bss.s_window  0x0000000000000d2c        0x4 src/c/watchface.c.25.o
+                0x00000000000010f8        0x6 src/c/watchface.c.25.o
+ *fill*         0x00000000000010fe        0x2 
+ .bss.uv_icon_layer
+                0x0000000000001100        0x4 src/c/watchface.c.25.o
+ .bss.uv_icon_bitmap
+                0x0000000000001104        0x4 src/c/watchface.c.25.o
+ .bss.s_window  0x0000000000001108        0x4 src/c/watchface.c.25.o
+ .bss.s_precip_buf.7638
+                0x000000000000110c       0x10 src/c/watchface.c.25.o
  .bss.time_layer
-                0x0000000000000d30        0x4 src/c/watchface.c.25.o
+                0x000000000000111c        0x4 src/c/watchface.c.25.o
  .bss.date_temp_layer
-                0x0000000000000d34        0x4 src/c/watchface.c.25.o
+                0x0000000000001120        0x4 src/c/watchface.c.25.o
  .bss.battery_layer
-                0x0000000000000d38        0x4 src/c/watchface.c.25.o
+                0x0000000000001124        0x4 src/c/watchface.c.25.o
  .bss.frame_layer
-                0x0000000000000d3c        0x4 src/c/watchface.c.25.o
+                0x0000000000001128        0x4 src/c/watchface.c.25.o
+ .bss.s_temp_buffer.7508
+                0x000000000000112c        0x8 src/c/weather.c.25.o
  .bss.s_on_temp
-                0x0000000000000d40        0x4 src/c/weather.c.25.o
- .bss.s_temp_buffer.7498
-                0x0000000000000d44        0x8 src/c/weather.c.25.o
+                0x0000000000001134        0x4 src/c/weather.c.25.o
+ .bss.s_on_uv   0x0000000000001138        0x4 src/c/weather.c.25.o
  .bss.s_icon_layer
-                0x0000000000000d4c        0x4 src/c/weather.c.25.o
+                0x000000000000113c        0x4 src/c/weather.c.25.o
+ .bss.s_on_precip
+                0x0000000000001140        0x4 src/c/weather.c.25.o
  .bss.s_icon_bitmap
-                0x0000000000000d50        0x4 src/c/weather.c.25.o
+                0x0000000000001144        0x4 src/c/weather.c.25.o
 
 DISCARD
  libc.a(*)
@@ -1499,66 +1529,66 @@ OUTPUT(/var/home/sofusa/git/watchface/build/aplite/pebble-app.elf elf32-littlear
  .comment       0x0000000000000000       0x4f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
  .comment       0x0000000000000000       0x4f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
 
-.debug_info     0x0000000000000000     0x23bc
- .debug_info    0x0000000000000000     0x18f9 src/c/watchface.c.25.o
- .debug_info    0x00000000000018f9      0x582 src/c/weather.c.25.o
- .debug_info    0x0000000000001e7b      0x31a aplite/appinfo.auto.c.25.o
- .debug_info    0x0000000000002195      0x123 aplite/src/resource_ids.auto.c.25.o
- .debug_info    0x00000000000022b8       0x93 src/message_keys.auto.c.25.o
- .debug_info    0x000000000000234b       0x71 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+.debug_info     0x0000000000000000     0x291e
+ .debug_info    0x0000000000000000     0x1d89 src/c/watchface.c.25.o
+ .debug_info    0x0000000000001d89      0x630 src/c/weather.c.25.o
+ .debug_info    0x00000000000023b9      0x31a aplite/appinfo.auto.c.25.o
+ .debug_info    0x00000000000026d3      0x123 aplite/src/resource_ids.auto.c.25.o
+ .debug_info    0x00000000000027f6       0xb7 src/message_keys.auto.c.25.o
+ .debug_info    0x00000000000028ad       0x71 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
 
-.debug_abbrev   0x0000000000000000      0x731
- .debug_abbrev  0x0000000000000000      0x397 src/c/watchface.c.25.o
- .debug_abbrev  0x0000000000000397      0x226 src/c/weather.c.25.o
- .debug_abbrev  0x00000000000005bd       0x9e aplite/appinfo.auto.c.25.o
- .debug_abbrev  0x000000000000065b       0x44 aplite/src/resource_ids.auto.c.25.o
- .debug_abbrev  0x000000000000069f       0x44 src/message_keys.auto.c.25.o
- .debug_abbrev  0x00000000000006e3       0x4e /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+.debug_abbrev   0x0000000000000000      0x791
+ .debug_abbrev  0x0000000000000000      0x3ec src/c/watchface.c.25.o
+ .debug_abbrev  0x00000000000003ec      0x231 src/c/weather.c.25.o
+ .debug_abbrev  0x000000000000061d       0x9e aplite/appinfo.auto.c.25.o
+ .debug_abbrev  0x00000000000006bb       0x44 aplite/src/resource_ids.auto.c.25.o
+ .debug_abbrev  0x00000000000006ff       0x44 src/message_keys.auto.c.25.o
+ .debug_abbrev  0x0000000000000743       0x4e /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
 
-.debug_loc      0x0000000000000000      0x6df
- .debug_loc     0x0000000000000000      0x595 src/c/watchface.c.25.o
- .debug_loc     0x0000000000000595      0x14a src/c/weather.c.25.o
+.debug_loc      0x0000000000000000      0x939
+ .debug_loc     0x0000000000000000      0x754 src/c/watchface.c.25.o
+ .debug_loc     0x0000000000000754      0x1e5 src/c/weather.c.25.o
 
-.debug_aranges  0x0000000000000000       0xf8
+.debug_aranges  0x0000000000000000      0x110
  .debug_aranges
-                0x0000000000000000       0x60 src/c/watchface.c.25.o
+                0x0000000000000000       0x78 src/c/watchface.c.25.o
  .debug_aranges
-                0x0000000000000060       0x38 src/c/weather.c.25.o
+                0x0000000000000078       0x38 src/c/weather.c.25.o
  .debug_aranges
-                0x0000000000000098       0x18 aplite/appinfo.auto.c.25.o
+                0x00000000000000b0       0x18 aplite/appinfo.auto.c.25.o
  .debug_aranges
-                0x00000000000000b0       0x18 aplite/src/resource_ids.auto.c.25.o
+                0x00000000000000c8       0x18 aplite/src/resource_ids.auto.c.25.o
  .debug_aranges
-                0x00000000000000c8       0x18 src/message_keys.auto.c.25.o
+                0x00000000000000e0       0x18 src/message_keys.auto.c.25.o
  .debug_aranges
-                0x00000000000000e0       0x18 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+                0x00000000000000f8       0x18 /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
 
-.debug_ranges   0x0000000000000000      0x120
- .debug_ranges  0x0000000000000000       0xf8 src/c/watchface.c.25.o
- .debug_ranges  0x00000000000000f8       0x28 src/c/weather.c.25.o
+.debug_ranges   0x0000000000000000      0x138
+ .debug_ranges  0x0000000000000000      0x110 src/c/watchface.c.25.o
+ .debug_ranges  0x0000000000000110       0x28 src/c/weather.c.25.o
 
-.debug_line     0x0000000000000000      0x961
- .debug_line    0x0000000000000000      0x41c src/c/watchface.c.25.o
- .debug_line    0x000000000000041c      0x219 src/c/weather.c.25.o
- .debug_line    0x0000000000000635      0x122 aplite/appinfo.auto.c.25.o
- .debug_line    0x0000000000000757       0xd1 aplite/src/resource_ids.auto.c.25.o
- .debug_line    0x0000000000000828       0xca src/message_keys.auto.c.25.o
- .debug_line    0x00000000000008f2       0x6f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+.debug_line     0x0000000000000000      0xa1b
+ .debug_line    0x0000000000000000      0x4b9 src/c/watchface.c.25.o
+ .debug_line    0x00000000000004b9      0x236 src/c/weather.c.25.o
+ .debug_line    0x00000000000006ef      0x122 aplite/appinfo.auto.c.25.o
+ .debug_line    0x0000000000000811       0xd1 aplite/src/resource_ids.auto.c.25.o
+ .debug_line    0x00000000000008e2       0xca src/message_keys.auto.c.25.o
+ .debug_line    0x00000000000009ac       0x6f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
 
-.debug_str      0x0000000000000000     0x11a2
- .debug_str     0x0000000000000000      0xc09 src/c/watchface.c.25.o
-                                        0xcdd (size before relaxing)
- .debug_str     0x0000000000000c09      0x13d src/c/weather.c.25.o
-                                        0x332 (size before relaxing)
- .debug_str     0x0000000000000d46      0x22f aplite/appinfo.auto.c.25.o
+.debug_str      0x0000000000000000     0x12d7
+ .debug_str     0x0000000000000000      0xd1a src/c/watchface.c.25.o
+                                        0xdee (size before relaxing)
+ .debug_str     0x0000000000000d1a      0x161 src/c/weather.c.25.o
+                                        0x3a3 (size before relaxing)
+ .debug_str     0x0000000000000e7b      0x22f aplite/appinfo.auto.c.25.o
                                         0x313 (size before relaxing)
- .debug_str     0x0000000000000f75      0x176 aplite/src/resource_ids.auto.c.25.o
+ .debug_str     0x00000000000010aa      0x176 aplite/src/resource_ids.auto.c.25.o
                                         0x234 (size before relaxing)
- .debug_str     0x00000000000010eb       0x18 src/message_keys.auto.c.25.o
-                                        0x10f (size before relaxing)
- .debug_str     0x0000000000001103       0x9f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+ .debug_str     0x0000000000001220       0x18 src/message_keys.auto.c.25.o
+                                        0x148 (size before relaxing)
+ .debug_str     0x0000000000001238       0x9f /var/home/sofusa/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/4.7.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
                                          0xc7 (size before relaxing)
 
-.debug_frame    0x0000000000000000      0x194
- .debug_frame   0x0000000000000000      0x124 src/c/watchface.c.25.o
- .debug_frame   0x0000000000000124       0x70 src/c/weather.c.25.o
+.debug_frame    0x0000000000000000      0x1ec
+ .debug_frame   0x0000000000000000      0x174 src/c/watchface.c.25.o
+ .debug_frame   0x0000000000000174       0x78 src/c/weather.c.25.o

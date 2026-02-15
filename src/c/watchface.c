@@ -10,10 +10,15 @@ static Layer       *battery_layer;
 static Layer       *weekday_layer;  
 static Layer       *frame_layer;   
 static BitmapLayer *icon_layer;
+static BitmapLayer *uv_icon_layer;     
+static GBitmap     *uv_icon_bitmap;    
+static TextLayer   *precip_layer;      
 
 static char time_buffer[6];         
 static char date_temp_buffer[24];   
 static char latest_temp[8] = "---"; 
+static int32_t s_last_uv = -1;         
+static int32_t s_last_precip = -1;     
 
 // ---------- Frame ----------
 static void frame_update_proc(Layer *layer, GContext *ctx) {
@@ -54,7 +59,6 @@ static void weekday_update_proc(Layer *layer, GContext *ctx) {
     glyph_sizes[i] = graphics_text_layout_get_content_size(
         letters[i],
         font,
-        // Use generous rect for measurement; we only look at size
         GRect(0, 0, bounds.size.w, bounds.size.h),
         GTextOverflowModeTrailingEllipsis,
         GTextAlignmentLeft);
@@ -148,6 +152,75 @@ static void weather_on_temp(const char *temp_text) {
   update_display();
 }
 
+// Lay out the top row: [main icon] [optional UV icon] [optional "mm" column]
+static void layout_top_row(void) {
+  if (!s_window) return;
+
+  Layer *root = window_get_root_layer(s_window);
+  GRect bounds = layer_get_bounds(root);
+
+  const int ICON_W = 32, ICON_H = 32;
+  const int MARGIN_TOP = 20;
+  const int GAP = 6;
+
+  bool show_uv = (s_last_uv > 3);
+  bool show_precip = (s_last_precip > 1);
+
+  // Precip column will be same width as an icon for simple centering
+  const int precip_w = show_precip ? ICON_W : 0;
+
+  int total_w = ICON_W; // always show main icon
+  if (show_uv)     total_w += GAP + ICON_W;
+  if (show_precip) total_w += GAP + precip_w;
+
+  int x = (bounds.size.w - total_w) / 2;
+  int y = MARGIN_TOP;
+
+  layer_set_frame(bitmap_layer_get_layer(icon_layer), GRect(x, y, ICON_W, ICON_H));
+  x += ICON_W;
+
+  // UV icon
+  if (show_uv) {
+    x += GAP;
+    if (!uv_icon_bitmap) {
+      uv_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SUNNY_DARK);
+      bitmap_layer_set_bitmap(uv_icon_layer, uv_icon_bitmap);
+      bitmap_layer_set_background_color(uv_icon_layer, GColorClear);
+      bitmap_layer_set_compositing_mode(uv_icon_layer, GCompOpSet);
+    }
+    layer_set_hidden(bitmap_layer_get_layer(uv_icon_layer), false);
+    layer_set_frame(bitmap_layer_get_layer(uv_icon_layer), GRect(x, y, ICON_W, ICON_H));
+    x += ICON_W;
+  } else {
+    layer_set_hidden(bitmap_layer_get_layer(uv_icon_layer), true);
+  }
+
+  // Precip text (two lines: "<n>\nmm")
+  if (show_precip) {
+    x += GAP;
+    layer_set_hidden(text_layer_get_layer(precip_layer), false);
+    layer_set_frame(text_layer_get_layer(precip_layer), GRect(x, y, precip_w, ICON_H));
+  } else {
+    layer_set_hidden(text_layer_get_layer(precip_layer), true);
+  }
+}
+
+static void weather_on_uv(int32_t uv) {
+  s_last_uv = uv;
+  layout_top_row();
+}
+
+static void weather_on_precip(int32_t mm) {
+  s_last_precip = mm;
+
+  // Show number above "mm"
+  static char s_precip_buf[16];
+  snprintf(s_precip_buf, sizeof(s_precip_buf), "%ld\nmm", (long)mm);
+  text_layer_set_text(precip_layer, s_precip_buf);
+
+  layout_top_row();
+}
+
 // ---------- Window ----------
 
 static void window_load(Window *window) {
@@ -169,6 +242,11 @@ static void window_load(Window *window) {
   bitmap_layer_set_background_color(icon_layer, GColorClear);
   bitmap_layer_set_compositing_mode(icon_layer, GCompOpSet);
 
+  uv_icon_layer = bitmap_layer_create(GRect(0, 0, ICON_W, ICON_H));
+  bitmap_layer_set_background_color(uv_icon_layer, GColorClear);
+  bitmap_layer_set_compositing_mode(uv_icon_layer, GCompOpSet);
+  layer_set_hidden(bitmap_layer_get_layer(uv_icon_layer), true);
+
   const int time_y = icon_y + ICON_H;
   time_layer = text_layer_create(GRect(0, time_y, bounds.size.w, 46));
   text_layer_set_background_color(time_layer, GColorClear);
@@ -184,6 +262,14 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(date_temp_layer, GTextAlignmentCenter);
   text_layer_set_text(date_temp_layer, ""); 
 
+  precip_layer = text_layer_create(GRect(0, 0, ICON_W, ICON_H));
+  text_layer_set_background_color(precip_layer, GColorClear);
+  text_layer_set_text_color(precip_layer, GColorWhite);
+  text_layer_set_font(precip_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
+  text_layer_set_text_alignment(precip_layer, GTextAlignmentCenter);
+  text_layer_set_text(precip_layer, "");
+  layer_set_hidden(text_layer_get_layer(precip_layer), true);
+
   const int weekday_y = row3_y + 35;
   weekday_layer = layer_create(GRect(0, weekday_y, bounds.size.w, 25));
   layer_set_update_proc(weekday_layer, weekday_update_proc);
@@ -191,15 +277,19 @@ static void window_load(Window *window) {
   battery_layer = layer_create(GRect(bounds.size.w - 20, 6, 18, 10));
   layer_set_update_proc(battery_layer, battery_update_proc);
 
-  layer_add_child(root, bitmap_layer_get_layer(icon_layer));    
-  layer_add_child(root, text_layer_get_layer(time_layer));      
-  layer_add_child(root, text_layer_get_layer(date_temp_layer)); 
-  layer_add_child(root, weekday_layer);                         
+  layer_add_child(root, bitmap_layer_get_layer(icon_layer));
+  layer_add_child(root, bitmap_layer_get_layer(uv_icon_layer));   
+  layer_add_child(root, text_layer_get_layer(precip_layer));      
+
+  layer_add_child(root, text_layer_get_layer(time_layer));
+  layer_add_child(root, text_layer_get_layer(date_temp_layer));
+  layer_add_child(root, weekday_layer);
   layer_add_child(root, battery_layer);
 
-  weather_init(icon_layer, weather_on_temp);
+  weather_init(icon_layer, weather_on_temp, weather_on_uv, weather_on_precip);
 
   update_display();
+  layout_top_row(); 
 }
 
 static void window_unload(Window *window) {
@@ -209,6 +299,13 @@ static void window_unload(Window *window) {
   layer_destroy(frame_layer);
   layer_destroy(weekday_layer);
   layer_destroy(battery_layer);
+
+  if (uv_icon_bitmap) {
+    gbitmap_destroy(uv_icon_bitmap);
+    uv_icon_bitmap = NULL;
+  }
+  bitmap_layer_destroy(uv_icon_layer);
+  text_layer_destroy(precip_layer);
 
   weather_deinit();
   bitmap_layer_destroy(icon_layer);

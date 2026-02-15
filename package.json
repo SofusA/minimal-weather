@@ -22,7 +22,9 @@
     },
     "messageKeys": [
       "WEATHER_ICON",
-      "WEATHER_TEMPERATURE"
+      "WEATHER_TEMPERATURE",
+      "WEATHER_UV",
+      "WEATHER_PRECIPITATION"
     ],
     "capabilities": [
       "location"
