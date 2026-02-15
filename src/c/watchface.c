@@ -4,16 +4,107 @@
 
 static Window *s_window;
 
-static TextLayer *time_layer;
-static TextLayer *date_temp_layer;
-static Layer     *battery_layer;
+static TextLayer   *time_layer;
+static TextLayer   *date_temp_layer;
+static Layer       *battery_layer;
+static Layer       *weekday_layer;  
+static Layer       *frame_layer;   
 static BitmapLayer *icon_layer;
 
-// Buffers
 static char time_buffer[6];         
 static char date_temp_buffer[24];   
 static char latest_temp[8] = "---"; 
 
+// ---------- Frame ----------
+static void frame_update_proc(Layer *layer, GContext *ctx) {
+  GRect bounds = layer_get_bounds(layer);
+
+  GRect r1 = grect_inset(bounds, GEdgeInsets(1));
+  GRect r2 = grect_inset(bounds, GEdgeInsets(2));  
+  GRect r3 = grect_inset(bounds, GEdgeInsets(3));  
+
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+
+  graphics_draw_round_rect(ctx, r1, 2);
+  graphics_draw_round_rect(ctx, r2, 2);
+  graphics_draw_round_rect(ctx, r3, 2);
+}
+
+// ---------- Weekday ----------
+static void weekday_update_proc(Layer *layer, GContext *ctx) {
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
+
+  int wday_pebble = t->tm_wday;
+  int wday_mon_first = (wday_pebble == 0) ? 6 : (wday_pebble - 1);
+
+  const char *letters[7] = {"M", "T", "W", "T", "F", "S", "S"};
+
+  GRect bounds = layer_get_bounds(layer);
+
+  GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  const int gap_px = 6;          
+  const int underline_thickness = 3; 
+  const int underline_inset = 1; 
+  const int underline_offset = 2; 
+
+  GSize glyph_sizes[7];
+  int total_width = 0;
+  for (int i = 0; i < 7; ++i) {
+    glyph_sizes[i] = graphics_text_layout_get_content_size(
+        letters[i],
+        font,
+        // Use generous rect for measurement; we only look at size
+        GRect(0, 0, bounds.size.w, bounds.size.h),
+        GTextOverflowModeTrailingEllipsis,
+        GTextAlignmentLeft);
+    total_width += glyph_sizes[i].w;
+    if (i < 6) total_width += gap_px;
+  }
+
+  // Center the entire strip horizontally
+  int start_x = bounds.origin.x + (bounds.size.w - total_width) / 2;
+  int center_y = bounds.origin.y + bounds.size.h / 2;
+
+  graphics_context_set_text_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+
+  // Position and draw each letter
+  int x = start_x;
+  for (int i = 0; i < 7; ++i) {
+    GSize sz = glyph_sizes[i];
+
+    // Vertically center the letter's frame
+    int text_y = center_y - sz.h / 2;
+    GRect text_frame = GRect(x, text_y, sz.w, sz.h);
+
+    // Draw the letter
+    graphics_draw_text(ctx,
+                       letters[i],
+                       font,
+                       text_frame,
+                       GTextOverflowModeWordWrap,
+                       GTextAlignmentLeft,
+                       NULL);
+
+    // Underline the current day: draw a filled rectangle (thicker and more visible)
+    if (i == wday_mon_first) {
+      int ul_x = x + underline_inset;
+      int ul_w = sz.w - 2 * underline_inset;
+      if (ul_w < 3) ul_w = sz.w; // safety: don't collapse on very narrow glyphs
+
+      int ul_y = text_frame.origin.y + text_frame.size.h + underline_offset;
+
+      // Clamp underline within layer vertically
+      graphics_fill_rect(ctx, GRect(ul_x, ul_y, ul_w, underline_thickness), 0, GCornerNone);
+    }
+
+    // Advance X with tight gap
+    x += sz.w + gap_px;
+  }
+}
+ 
 // ---------- Battery ----------
 
 static void battery_update_proc(Layer *layer, GContext *ctx) {
@@ -33,16 +124,17 @@ static void update_display(void) {
   strftime(time_buffer, sizeof(time_buffer), "%H:%M", t);
   text_layer_set_text(time_layer, time_buffer);
 
-  // Build lowercase day-of-week ("sat") safely
-  char dow[4] = "";
-  strftime(dow, sizeof(dow), "%a", t);
-  for (size_t i = 0; dow[i] != '\0'; ++i) {
-    dow[i] = (char)tolower((unsigned char)dow[i]);
+  char mon[4] = "";
+  strftime(mon, sizeof(mon), "%b", t);
+  for (size_t i = 0; mon[i] != '\0'; ++i) {
+    mon[i] = (char)tolower((unsigned char)mon[i]);
   }
 
-  char date_part[12];
-  snprintf(date_part, sizeof(date_part), "%s %d", dow, t->tm_mday);
+  // Build "15 feb"
+  char date_part[16];
+  snprintf(date_part, sizeof(date_part), "%d %s", t->tm_mday, mon);
 
+  // Combine: "15 feb, 5°"  (or "15 feb, ---" until weather updates)
   snprintf(date_temp_buffer, sizeof(date_temp_buffer), "%s | %s", date_part, latest_temp);
   text_layer_set_text(date_temp_layer, date_temp_buffer);
 }
@@ -64,8 +156,12 @@ static void window_load(Window *window) {
 
   window_set_background_color(window, GColorBlack);
 
+  frame_layer = layer_create(bounds);
+  layer_set_update_proc(frame_layer, frame_update_proc);
+  layer_add_child(root, frame_layer);  
+
   const int ICON_W = 32, ICON_H = 32;
-  const int MARGIN_TOP = 6;
+  const int MARGIN_TOP = 20;
 
   const int icon_x = (bounds.size.w - ICON_W) / 2;
   const int icon_y = MARGIN_TOP;
@@ -86,14 +182,19 @@ static void window_load(Window *window) {
   text_layer_set_text_color(date_temp_layer, GColorWhite);
   text_layer_set_font(date_temp_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(date_temp_layer, GTextAlignmentCenter);
-  text_layer_set_text(date_temp_layer, ""); // set in update_display()
+  text_layer_set_text(date_temp_layer, ""); 
+
+  const int weekday_y = row3_y + 35;
+  weekday_layer = layer_create(GRect(0, weekday_y, bounds.size.w, 25));
+  layer_set_update_proc(weekday_layer, weekday_update_proc);
 
   battery_layer = layer_create(GRect(bounds.size.w - 20, 6, 18, 10));
   layer_set_update_proc(battery_layer, battery_update_proc);
 
-  layer_add_child(root, bitmap_layer_get_layer(icon_layer));
-  layer_add_child(root, text_layer_get_layer(time_layer));
-  layer_add_child(root, text_layer_get_layer(date_temp_layer));
+  layer_add_child(root, bitmap_layer_get_layer(icon_layer));    
+  layer_add_child(root, text_layer_get_layer(time_layer));      
+  layer_add_child(root, text_layer_get_layer(date_temp_layer)); 
+  layer_add_child(root, weekday_layer);                         
   layer_add_child(root, battery_layer);
 
   weather_init(icon_layer, weather_on_temp);
@@ -104,6 +205,9 @@ static void window_load(Window *window) {
 static void window_unload(Window *window) {
   text_layer_destroy(time_layer);
   text_layer_destroy(date_temp_layer);
+ 
+  layer_destroy(frame_layer);
+  layer_destroy(weekday_layer);
   layer_destroy(battery_layer);
 
   weather_deinit();
