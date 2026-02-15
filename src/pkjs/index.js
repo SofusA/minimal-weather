@@ -7,7 +7,7 @@ const ImageId = {
   IMAGE_CLOUDY_DARK: 5,
   IMAGE_HEAVY_RAIN_DARK: 6,
   IMAGE_HEAVY_SNOW_DARK: 7,
-  IMAGE_RAIN_SNOW_DARK: 8,   
+  IMAGE_RAIN_SNOW_DARK: 8,
   IMAGE_THUNDERSTORM_DARK: 9,
 };
 
@@ -53,7 +53,7 @@ const SYMBOL_TO_IMAGE_ID = {
   lightsleet: ImageId.IMAGE_RAIN_SNOW_DARK,
   heavyrain: ImageId.IMAGE_HEAVY_RAIN_DARK,
 
-  // Light rain showers -> heavy rain (you can switch to a lighter rain icon if you add one)
+  // Light rain showers -> heavy rain
   lightrainshowers_day: ImageId.IMAGE_HEAVY_RAIN_DARK,
   lightrainshowers_night: ImageId.IMAGE_HEAVY_RAIN_DARK,
   lightrainshowers_polartwilight: ImageId.IMAGE_HEAVY_RAIN_DARK,
@@ -158,7 +158,6 @@ const SYMBOL_TO_IMAGE_ID = {
 };
 
 // Public function: map API symbol -> numeric image id.
-// Provides a safe fallback if the symbol is missing/unknown.
 function getImageIdFromSymbol(symbol) {
   if (!symbol || typeof symbol !== 'string') {
     return ImageId.IMAGE_QUESTION_DARK;
@@ -168,7 +167,60 @@ function getImageIdFromSymbol(symbol) {
   return SYMBOL_TO_IMAGE_ID[key];
 }
 
-function sendDataToPebble(temperature, icon_code, uv, precipitation) {
+var latestData = {
+  temp: null,
+  icon_code: null,
+  uv: null,
+  precipitation: null,
+  sunriseStr: null,
+  sunsetStr: null
+};
+
+function resetLatestData() { 
+  latestData.temp = null;
+  latestData.icon_code = null;
+  latestData.uv = null;
+  latestData.precipitation = null;
+  latestData.sunriseStr = null;
+  latestData.sunsetStr = null;
+}
+
+function maybeSend() { 
+  if (latestData.temp !== null &&
+      latestData.icon_code !== null &&
+      latestData.uv !== null &&
+      latestData.precipitation !== null &&
+      latestData.sunriseStr !== null &&
+      latestData.sunsetStr !== null) {
+    sendDataToPebble(
+      latestData.temp,
+      latestData.icon_code,
+      latestData.uv,
+      latestData.precipitation,
+      latestData.sunriseStr,
+      latestData.sunsetStr
+    );
+  }
+}
+
+// format ISO8601 UTC -> local "HH:MM" =====
+function formatIsoToLocalHHMM(isoStr) {
+  try {
+    var d = new Date(isoStr); // respects +00:00 (UTC) and converts to local when reading H/M
+    if (isNaN(d.getTime())) return '--:--';
+
+    var h = d.getHours();
+    var m = d.getMinutes();
+
+    var hh = (h < 10 ? '0' : '') + h;
+    var mm = (m < 10 ? '0' : '') + m;
+    return hh + ':' + mm;
+  } catch (e) {
+    return '--:--';
+  }
+}
+
+function sendDataToPebble(temperature, icon_code, uv, precipitation, sunriseStr, sunsetStr) { 
   console.log('Sending data to pebble.');
 
   var icon = getImageIdFromSymbol(icon_code);
@@ -177,7 +229,9 @@ function sendDataToPebble(temperature, icon_code, uv, precipitation) {
     'WEATHER_TEMPERATURE': temperature,
     'WEATHER_ICON': icon,
     'WEATHER_UV': uv,
-    'WEATHER_PRECIPITATION': precipitation
+    'WEATHER_PRECIPITATION': precipitation,
+    'SUNRISE': sunriseStr || '--:--', 
+    'SUNSET':  sunsetStr || '--:--'   
   };
 
   Pebble.sendAppMessage(message,
@@ -193,7 +247,7 @@ function sendDataToPebble(temperature, icon_code, uv, precipitation) {
 function fetchWeather(lat, lon) {
   const url =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete" +
-    "?lat=" + lat + "&lon=" + lon;
+    "?lat=" + lat + "&lon=" + lon; 
 
   console.log("Fetching weather: " + url);
 
@@ -209,17 +263,21 @@ function fetchWeather(lat, lon) {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           var data = JSON.parse(xhr.responseText);
-          
-          const temp =
+
+          var temp =
             data.properties.timeseries[0].data.instant.details.air_temperature;
 
-          const uv = data.properties.timeseries[0].data.instant.details.ultraviolet_index_clear_sky;
+          var uv = data.properties.timeseries[0].data.instant.details.ultraviolet_index_clear_sky;
 
-          const image = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
-          const precipitation = data.properties.timeseries[0].data.next_6_hours.details.precipitation_amount;
+          var image = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+          var precipitation = data.properties.timeseries[0].data.next_6_hours.details.precipitation_amount;
 
-          sendDataToPebble(Math.round(temp), image, Math.round(uv), Math.round(precipitation));
-          
+          latestData.temp = Math.round(temp);
+          latestData.icon_code = image;
+          latestData.uv = Math.round(uv);
+          latestData.precipitation = Math.round(precipitation);
+          maybeSend(); 
+
         } catch (err) {
           console.log("JSON parse error: " + err);
         }
@@ -233,13 +291,73 @@ function fetchWeather(lat, lon) {
   xhr.send();
 }
 
+function fetchSunTimes(lat, lon) { 
+  var url =
+    "https://api.met.no/weatherapi/sunrise/3.0/sun?lat=" + lat + "&lon=" + lon;
+
+  console.log("Fetching sunrise/sunset: " + url);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.timeout = 15000;
+  xhr.setRequestHeader("Accept", "application/json");
+  xhr.setRequestHeader("User-Agent", "PebbleWatchface");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      console.log("Sun API readyState=4, status=" + xhr.status);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+
+          // Guard for polar day/night or missing fields
+          var sunriseIso = data && data.properties && data.properties.sunrise && data.properties.sunrise.time;
+          var sunsetIso  = data && data.properties && data.properties.sunset  && data.properties.sunset.time;
+
+          var sunriseStr = sunriseIso ? formatIsoToLocalHHMM(sunriseIso) : '—';
+          var sunsetStr  = sunsetIso ? formatIsoToLocalHHMM(sunsetIso)   : '—';
+
+          latestData.sunriseStr = sunriseStr;
+          latestData.sunsetStr  = sunsetStr;
+          maybeSend();
+
+        } catch (err) {
+          console.log("Sun API JSON parse error: " + err);
+          latestData.sunriseStr = '--:--';
+          latestData.sunsetStr = '--:--';
+          maybeSend();
+        }
+      } else {
+        console.log("Sun API HTTP error, status=" + xhr.status + " body: " + xhr.responseText);
+        latestData.sunriseStr = '--:--';
+        latestData.sunsetStr = '--:--';
+        maybeSend();
+      }
+    }
+  };
+  xhr.onerror = function () {
+    console.log("Sun API XHR network error");
+    latestData.sunriseStr = '--:--';
+    latestData.sunsetStr = '--:--';
+    maybeSend();
+  };
+  xhr.ontimeout = function () {
+    console.log("Sun API XHR timeout");
+    latestData.sunriseStr = '--:--';
+    latestData.sunsetStr = '--:--';
+    maybeSend();
+  };
+  xhr.send();
+}
 
 function requestWeather() {
   console.log("Requesting geolocation...");
   navigator.geolocation.getCurrentPosition(
     function(pos) {
       console.log("Got location: " + pos.coords.latitude + ", " + pos.coords.longitude);
-      fetchWeather(pos.coords.latitude, pos.coords.longitude);
+      resetLatestData(); 
+      fetchWeather(pos.coords.latitude, pos.coords.longitude);  
+      fetchSunTimes(pos.coords.latitude, pos.coords.longitude); 
     },
     function(err) {
       console.log("Location error: " + JSON.stringify(err));

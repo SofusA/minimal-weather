@@ -5,28 +5,32 @@
 static Window *s_window;
 
 static TextLayer   *time_layer;
-static TextLayer   *date_temp_layer;
+static TextLayer   *date_layer;         
+static TextLayer   *weather_row_layer;  
 static Layer       *battery_layer;
-static Layer       *weekday_layer;  
-static Layer       *frame_layer;   
+static Layer       *frame_layer;
 static BitmapLayer *icon_layer;
-static BitmapLayer *uv_icon_layer;     
-static GBitmap     *uv_icon_bitmap;    
-static TextLayer   *precip_layer;      
+static BitmapLayer *uv_icon_layer;
+static GBitmap     *uv_icon_bitmap;
+static TextLayer   *precip_layer;
 
-static char time_buffer[6];         
-static char date_temp_buffer[24];   
-static char latest_temp[8] = "---"; 
-static int32_t s_last_uv = -1;         
-static int32_t s_last_precip = -1;     
+static char time_buffer[6];
+static char date_buffer[20];           
+static char latest_temp[8] = "---";    
+static char s_sunrise[8] = "--:--";    
+static char s_sunset[8]  = "--:--";    
+static char s_weather_row[40];         
+
+static int32_t s_last_uv = -1;
+static int32_t s_last_precip = -1;
 
 // ---------- Frame ----------
 static void frame_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
 
   GRect r1 = grect_inset(bounds, GEdgeInsets(1));
-  GRect r2 = grect_inset(bounds, GEdgeInsets(2));  
-  GRect r3 = grect_inset(bounds, GEdgeInsets(3));  
+  GRect r2 = grect_inset(bounds, GEdgeInsets(2));
+  GRect r3 = grect_inset(bounds, GEdgeInsets(3));
 
   graphics_context_set_stroke_color(ctx, GColorWhite);
 
@@ -35,82 +39,7 @@ static void frame_update_proc(Layer *layer, GContext *ctx) {
   graphics_draw_round_rect(ctx, r3, 2);
 }
 
-// ---------- Weekday ----------
-static void weekday_update_proc(Layer *layer, GContext *ctx) {
-  time_t now = time(NULL);
-  struct tm *t = localtime(&now);
-
-  int wday_pebble = t->tm_wday;
-  int wday_mon_first = (wday_pebble == 0) ? 6 : (wday_pebble - 1);
-
-  const char *letters[7] = {"M", "T", "W", "T", "F", "S", "S"};
-
-  GRect bounds = layer_get_bounds(layer);
-
-  GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  const int gap_px = 6;          
-  const int underline_thickness = 3; 
-  const int underline_inset = 1; 
-  const int underline_offset = 2; 
-
-  GSize glyph_sizes[7];
-  int total_width = 0;
-  for (int i = 0; i < 7; ++i) {
-    glyph_sizes[i] = graphics_text_layout_get_content_size(
-        letters[i],
-        font,
-        GRect(0, 0, bounds.size.w, bounds.size.h),
-        GTextOverflowModeTrailingEllipsis,
-        GTextAlignmentLeft);
-    total_width += glyph_sizes[i].w;
-    if (i < 6) total_width += gap_px;
-  }
-
-  // Center the entire strip horizontally
-  int start_x = bounds.origin.x + (bounds.size.w - total_width) / 2;
-  int center_y = bounds.origin.y + bounds.size.h / 2;
-
-  graphics_context_set_text_color(ctx, GColorWhite);
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_context_set_stroke_color(ctx, GColorWhite);
-
-  // Position and draw each letter
-  int x = start_x;
-  for (int i = 0; i < 7; ++i) {
-    GSize sz = glyph_sizes[i];
-
-    // Vertically center the letter's frame
-    int text_y = center_y - sz.h / 2;
-    GRect text_frame = GRect(x, text_y, sz.w, sz.h);
-
-    // Draw the letter
-    graphics_draw_text(ctx,
-                       letters[i],
-                       font,
-                       text_frame,
-                       GTextOverflowModeWordWrap,
-                       GTextAlignmentLeft,
-                       NULL);
-
-    // Underline the current day: draw a filled rectangle (thicker and more visible)
-    if (i == wday_mon_first) {
-      int ul_x = x + underline_inset;
-      int ul_w = sz.w - 2 * underline_inset;
-      if (ul_w < 3) ul_w = sz.w; // safety: don't collapse on very narrow glyphs
-
-      int ul_y = text_frame.origin.y + text_frame.size.h + underline_offset;
-
-      // Clamp underline within layer vertically
-      graphics_fill_rect(ctx, GRect(ul_x, ul_y, ul_w, underline_thickness), 0, GCornerNone);
-    }
-
-    // Advance X with tight gap
-    x += sz.w + gap_px;
-  }
-}
- 
 // ---------- Battery ----------
-
 static void battery_update_proc(Layer *layer, GContext *ctx) {
   BatteryChargeState state = battery_state_service_peek();
   if (state.charge_percent >= 25) return;
@@ -119,8 +48,32 @@ static void battery_update_proc(Layer *layer, GContext *ctx) {
   graphics_draw_rect(ctx, GRect(14, 2, 2, 4));
 }
 
-// ---------- Time & Combined Date/Temp ----------
+// ---------- Weather Row (temp + sun) ----------
+static void update_weather_row(void) {
+  snprintf(s_weather_row, sizeof(s_weather_row),
+           "%s | %s | %s",
+           latest_temp,
+           s_sunrise,
+           s_sunset);
+  text_layer_set_text(weather_row_layer, s_weather_row);
+}
 
+static void weather_on_temp(const char *temp_text) {
+  snprintf(latest_temp, sizeof(latest_temp), "%s", temp_text ? temp_text : "---");
+  update_weather_row();
+}
+
+static void weather_on_sunrise(const char *rise) {
+  snprintf(s_sunrise, sizeof(s_sunrise), "%s", rise ? rise : "--:--");
+  update_weather_row();
+}
+
+static void weather_on_sunset(const char *set) {
+  snprintf(s_sunset, sizeof(s_sunset), "%s", set ? set : "--:--");
+  update_weather_row();
+}
+
+// ---------- Time & Date ----------
 static void update_display(void) {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
@@ -128,24 +81,22 @@ static void update_display(void) {
   strftime(time_buffer, sizeof(time_buffer), "%H:%M", t);
   text_layer_set_text(time_layer, time_buffer);
 
-  char mon[4] = "";
-  strftime(mon, sizeof(mon), "%b", t);
+  // Get 3-letter weekday and month, then lowercase both
+  char wday[4] = "";
+  char mon[4]  = "";
+  strftime(wday, sizeof(wday), "%a", t); // e.g., "Sun"
+  strftime(mon,  sizeof(mon),  "%b", t); // e.g., "Feb"
+
+  for (size_t i = 0; wday[i] != '\0'; ++i) {
+    wday[i] = (char)tolower((unsigned char)wday[i]);
+  }
   for (size_t i = 0; mon[i] != '\0'; ++i) {
     mon[i] = (char)tolower((unsigned char)mon[i]);
   }
 
-  // Build "15 feb"
-  char date_part[16];
-  snprintf(date_part, sizeof(date_part), "%d %s", t->tm_mday, mon);
-
-  // Combine: "15 feb, 5°"  (or "15 feb, ---" until weather updates)
-  snprintf(date_temp_buffer, sizeof(date_temp_buffer), "%s | %s", date_part, latest_temp);
-  text_layer_set_text(date_temp_layer, date_temp_buffer);
-}
-
-static void weather_on_temp(const char *temp_text) {
-  snprintf(latest_temp, sizeof(latest_temp), "%s", temp_text ? temp_text : "---");
-  update_display();
+  // Build "sun, 15 feb"
+  snprintf(date_buffer, sizeof(date_buffer), "%s %d %s", wday, t->tm_mday, mon);
+  text_layer_set_text(date_layer, date_buffer);
 }
 
 // Lay out the top row: [main icon] [optional UV icon] [optional "mm" column]
@@ -227,7 +178,7 @@ static void window_load(Window *window) {
 
   frame_layer = layer_create(bounds);
   layer_set_update_proc(frame_layer, frame_update_proc);
-  layer_add_child(root, frame_layer);  
+  layer_add_child(root, frame_layer);
 
   const int ICON_W = 32, ICON_H = 32;
   const int MARGIN_TOP = 20;
@@ -251,12 +202,21 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
 
   const int row3_y = time_y + 40;
-  date_temp_layer = text_layer_create(GRect(0, row3_y, bounds.size.w, 28));
-  text_layer_set_background_color(date_temp_layer, GColorClear);
-  text_layer_set_text_color(date_temp_layer, GColorWhite);
-  text_layer_set_font(date_temp_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_text_alignment(date_temp_layer, GTextAlignmentCenter);
-  text_layer_set_text(date_temp_layer, ""); 
+
+  date_layer = text_layer_create(GRect(0, row3_y, bounds.size.w, 28));
+  text_layer_set_background_color(date_layer, GColorClear);
+  text_layer_set_text_color(date_layer, GColorWhite);
+  text_layer_set_font(date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(date_layer, GTextAlignmentCenter);
+  text_layer_set_text(date_layer, "");
+
+  const int weather_row_y = row3_y + 34;
+  weather_row_layer = text_layer_create(GRect(0, weather_row_y, bounds.size.w, 24));
+  text_layer_set_background_color(weather_row_layer, GColorClear);
+  text_layer_set_text_color(weather_row_layer, GColorWhite);
+  text_layer_set_font(weather_row_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_text_alignment(weather_row_layer, GTextAlignmentCenter);
+  text_layer_set_text(weather_row_layer, "--- | --:-- | --:--");
 
   precip_layer = text_layer_create(GRect(0, 0, ICON_W, ICON_H));
   text_layer_set_background_color(precip_layer, GColorClear);
@@ -266,34 +226,38 @@ static void window_load(Window *window) {
   text_layer_set_text(precip_layer, "");
   layer_set_hidden(text_layer_get_layer(precip_layer), true);
 
-  const int weekday_y = row3_y + 35;
-  weekday_layer = layer_create(GRect(0, weekday_y, bounds.size.w, 25));
-  layer_set_update_proc(weekday_layer, weekday_update_proc);
-
   battery_layer = layer_create(GRect(bounds.size.w - 20, 6, 18, 10));
   layer_set_update_proc(battery_layer, battery_update_proc);
 
   layer_add_child(root, bitmap_layer_get_layer(icon_layer));
-  layer_add_child(root, bitmap_layer_get_layer(uv_icon_layer));   
-  layer_add_child(root, text_layer_get_layer(precip_layer));      
+  layer_add_child(root, bitmap_layer_get_layer(uv_icon_layer));
+  layer_add_child(root, text_layer_get_layer(precip_layer));
 
   layer_add_child(root, text_layer_get_layer(time_layer));
-  layer_add_child(root, text_layer_get_layer(date_temp_layer));
-  layer_add_child(root, weekday_layer);
+  layer_add_child(root, text_layer_get_layer(date_layer));
+  layer_add_child(root, text_layer_get_layer(weather_row_layer)); 
   layer_add_child(root, battery_layer);
 
-  weather_init(icon_layer, weather_on_temp, weather_on_uv, weather_on_precip);
+  weather_init(
+    icon_layer,
+    weather_on_temp,
+    weather_on_uv,
+    weather_on_precip,
+    weather_on_sunrise,  
+    weather_on_sunset    
+  );
 
   update_display();
-  layout_top_row(); 
+  update_weather_row(); 
+  layout_top_row();
 }
 
 static void window_unload(Window *window) {
   text_layer_destroy(time_layer);
-  text_layer_destroy(date_temp_layer);
- 
+  text_layer_destroy(date_layer);
+  text_layer_destroy(weather_row_layer);
+
   layer_destroy(frame_layer);
-  layer_destroy(weekday_layer);
   layer_destroy(battery_layer);
 
   if (uv_icon_bitmap) {
@@ -313,7 +277,7 @@ static void send_weather_refresh(void) {
   DictionaryIterator *iter;
   AppMessageResult res = app_message_outbox_begin(&iter);
   if (res != APP_MSG_OK) {
-    return; 
+    return;
   }
 
   dict_write_uint8(iter, MESSAGE_KEY_WEATHER_REFRESH, 1);
@@ -335,7 +299,6 @@ static void bt_handler(bool connected) {
   }
 }
 
-
 static void init(void) {
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers){
@@ -348,7 +311,7 @@ static void init(void) {
   connection_service_subscribe((ConnectionHandlers){ .pebble_app_connection_handler = bt_handler });
 
   app_message_register_inbox_received(inbox_received_handler);
-  app_message_open(128, 128);
+  app_message_open(256, 256);
 }
 
 static void deinit(void) {

@@ -25,7 +25,9 @@
       "WEATHER_ICON",
       "WEATHER_TEMPERATURE",
       "WEATHER_UV",
-      "WEATHER_PRECIPITATION"
+      "WEATHER_PRECIPITATION",
+      "SUNRISE",
+      "SUNSET"
     ],
     "capabilities": [
       "location"
