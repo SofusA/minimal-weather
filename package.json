@@ -26,8 +26,7 @@
       "WEATHER_TEMPERATURE",
       "WEATHER_UV",
       "WEATHER_PRECIPITATION",
-      "SUNRISE",
-      "SUNSET"
+      "SUN_EVENT"
     ],
     "capabilities": [
       "location"

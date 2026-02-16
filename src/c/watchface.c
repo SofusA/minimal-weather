@@ -17,8 +17,7 @@ static TextLayer   *precip_layer;
 static char time_buffer[6];
 static char date_buffer[20];           
 static char latest_temp[8] = "---";    
-static char s_sunrise[8] = "--:--";    
-static char s_sunset[8]  = "--:--";    
+static char s_sun_next[8];
 static char s_weather_row[40];         
 
 static int32_t s_last_uv = -1;
@@ -51,10 +50,9 @@ static void battery_update_proc(Layer *layer, GContext *ctx) {
 // ---------- Weather Row (temp + sun) ----------
 static void update_weather_row(void) {
   snprintf(s_weather_row, sizeof(s_weather_row),
-           "%s | %s | %s",
-           latest_temp,
-           s_sunrise,
-           s_sunset);
+         "%s | %s",
+         latest_temp,
+         s_sun_next);
   text_layer_set_text(weather_row_layer, s_weather_row);
 }
 
@@ -63,13 +61,8 @@ static void weather_on_temp(const char *temp_text) {
   update_weather_row();
 }
 
-static void weather_on_sunrise(const char *rise) {
-  snprintf(s_sunrise, sizeof(s_sunrise), "%s", rise ? rise : "--:--");
-  update_weather_row();
-}
-
-static void weather_on_sunset(const char *set) {
-  snprintf(s_sunset, sizeof(s_sunset), "%s", set ? set : "--:--");
+static void weather_on_sun_event(const char *t) {
+  snprintf(s_sun_next, sizeof(s_sun_next), "%s", t ? t : "--:--");
   update_weather_row();
 }
 
@@ -216,7 +209,7 @@ static void window_load(Window *window) {
   text_layer_set_text_color(weather_row_layer, GColorWhite);
   text_layer_set_font(weather_row_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_alignment(weather_row_layer, GTextAlignmentCenter);
-  text_layer_set_text(weather_row_layer, "--- | --:-- | --:--");
+  text_layer_set_text(weather_row_layer, "--- | --:--");
 
   precip_layer = text_layer_create(GRect(0, 0, ICON_W, ICON_H));
   text_layer_set_background_color(precip_layer, GColorClear);
@@ -243,8 +236,7 @@ static void window_load(Window *window) {
     weather_on_temp,
     weather_on_uv,
     weather_on_precip,
-    weather_on_sunrise,  
-    weather_on_sunset    
+    weather_on_sun_event  
   );
 
   update_display();

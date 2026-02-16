@@ -172,34 +172,30 @@ var latestData = {
   icon_code: null,
   uv: null,
   precipitation: null,
-  sunriseStr: null,
-  sunsetStr: null
+  sunEventStr: null 
 };
 
-function resetLatestData() { 
+function resetLatestData() {
   latestData.temp = null;
   latestData.icon_code = null;
   latestData.uv = null;
   latestData.precipitation = null;
-  latestData.sunriseStr = null;
-  latestData.sunsetStr = null;
+  latestData.sunEventStr = null;
 }
 
-function maybeSend() { 
-  if (latestData.temp !== null &&
-      latestData.icon_code !== null &&
-      latestData.uv !== null &&
-      latestData.precipitation !== null &&
-      latestData.sunriseStr !== null &&
-      latestData.sunsetStr !== null) {
-    sendDataToPebble(
-      latestData.temp,
-      latestData.icon_code,
-      latestData.uv,
-      latestData.precipitation,
-      latestData.sunriseStr,
-      latestData.sunsetStr
-    );
+function toYYYYMMDD(d) {
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function parseIsoToDate(isoStr) {
+  try {
+    const d = new Date(isoStr);
+    return isNaN(d.getTime()) ? null : d;
+  } catch (_) {
+    return null;
   }
 }
 
@@ -220,7 +216,23 @@ function formatIsoToLocalHHMM(isoStr) {
   }
 }
 
-function sendDataToPebble(temperature, icon_code, uv, precipitation, sunriseStr, sunsetStr) { 
+function maybeSend() {
+  if (latestData.temp !== null &&
+      latestData.icon_code !== null &&
+      latestData.uv !== null &&
+      latestData.precipitation !== null &&
+      latestData.sunEventStr !== null) {
+    sendDataToPebble(
+      latestData.temp,
+      latestData.icon_code,
+      latestData.uv,
+      latestData.precipitation,
+      latestData.sunEventStr
+    );
+  }
+}
+
+function sendDataToPebble(temperature, icon_code, uv, precipitation, sunEventStr) {
   console.log('Sending data to pebble.');
 
   var icon = getImageIdFromSymbol(icon_code);
@@ -230,8 +242,7 @@ function sendDataToPebble(temperature, icon_code, uv, precipitation, sunriseStr,
     'WEATHER_ICON': icon,
     'WEATHER_UV': uv,
     'WEATHER_PRECIPITATION': precipitation,
-    'SUNRISE': sunriseStr || '--:--', 
-    'SUNSET':  sunsetStr || '--:--'   
+    'SUN_EVENT': sunEventStr || '--:--',
   };
 
   Pebble.sendAppMessage(message,
@@ -291,11 +302,14 @@ function fetchWeather(lat, lon) {
   xhr.send();
 }
 
-function fetchSunTimes(lat, lon) { 
+function fetchSunForDate(lat, lon, dateStr, cb) {
   var url =
-    "https://api.met.no/weatherapi/sunrise/3.0/sun?lat=" + lat + "&lon=" + lon;
+    "https://api.met.no/weatherapi/sunrise/3.0/sun" +
+    "?lat=" + encodeURIComponent(lat) +
+    "&lon=" + encodeURIComponent(lon) +
+    "&date=" + encodeURIComponent(dateStr);
 
-  console.log("Fetching sunrise/sunset: " + url);
+  console.log("Fetching sunrise/sunset for " + dateStr + ": " + url);
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -305,49 +319,86 @@ function fetchSunTimes(lat, lon) {
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      console.log("Sun API readyState=4, status=" + xhr.status);
+      console.log("Sun API readyState=4, status=" + xhr.status + " for date " + dateStr);
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           var data = JSON.parse(xhr.responseText);
-
           // Guard for polar day/night or missing fields
           var sunriseIso = data && data.properties && data.properties.sunrise && data.properties.sunrise.time;
           var sunsetIso  = data && data.properties && data.properties.sunset  && data.properties.sunset.time;
-
-          var sunriseStr = sunriseIso ? formatIsoToLocalHHMM(sunriseIso) : '—';
-          var sunsetStr  = sunsetIso ? formatIsoToLocalHHMM(sunsetIso)   : '—';
-
-          latestData.sunriseStr = sunriseStr;
-          latestData.sunsetStr  = sunsetStr;
-          maybeSend();
-
+          cb(null, { sunriseIso: sunriseIso || null, sunsetIso: sunsetIso || null });
         } catch (err) {
           console.log("Sun API JSON parse error: " + err);
-          latestData.sunriseStr = '--:--';
-          latestData.sunsetStr = '--:--';
-          maybeSend();
+          cb(err);
         }
       } else {
         console.log("Sun API HTTP error, status=" + xhr.status + " body: " + xhr.responseText);
-        latestData.sunriseStr = '--:--';
-        latestData.sunsetStr = '--:--';
-        maybeSend();
+        cb(new Error("HTTP " + xhr.status));
       }
     }
   };
-  xhr.onerror = function () {
-    console.log("Sun API XHR network error");
-    latestData.sunriseStr = '--:--';
-    latestData.sunsetStr = '--:--';
-    maybeSend();
-  };
-  xhr.ontimeout = function () {
-    console.log("Sun API XHR timeout");
-    latestData.sunriseStr = '--:--';
-    latestData.sunsetStr = '--:--';
-    maybeSend();
-  };
+  xhr.onerror = function () { console.log("Sun API XHR network error"); cb(new Error("network")); };
+  xhr.ontimeout = function () { console.log("Sun API XHR timeout"); cb(new Error("timeout")); };
   xhr.send();
+}
+
+function chooseNextEventToday(sunriseIso, sunsetIso) {
+  const now = new Date();
+  const sr = sunriseIso ? parseIsoToDate(sunriseIso) : null;
+  const ss = sunsetIso  ? parseIsoToDate(sunsetIso)  : null;
+
+  // If we still have a sunrise ahead today
+  if (sr && now < sr) {
+    return { type: 'sunrise', timeStr: formatIsoToLocalHHMM(sunriseIso) };
+  }
+  // Otherwise, if we still have a sunset ahead today
+  if (ss && now < ss) {
+    return { type: 'sunset', timeStr: formatIsoToLocalHHMM(sunsetIso) };
+  }
+  // No more events today 
+  return null;
+}
+
+function fetchSunNextEvent(lat, lon) {
+  const today = new Date();
+  const todayStr = toYYYYMMDD(today);
+  fetchSunForDate(lat, lon, todayStr, function(err, todayData) {
+    if (err || !todayData) {
+      // If today fails, try tomorrow sunrise as a best-effort fallback
+      const tmrStr = toYYYYMMDD(new Date(today.getTime() + 24*60*60*1000));
+      fetchSunForDate(lat, lon, tmrStr, function(err2, tmrData) {
+        if (!err2 && tmrData && tmrData.sunriseIso) {
+          latestData.sunEventStr = formatIsoToLocalHHMM(tmrData.sunriseIso);
+        } else {
+          latestData.sunEventStr = '--:--';
+        }
+        maybeSend();
+      });
+      return;
+    }
+
+    const nextToday = chooseNextEventToday(todayData.sunriseIso, todayData.sunsetIso);
+    if (nextToday) {
+      latestData.sunEventStr = nextToday.timeStr;
+      maybeSend();
+      return;
+    }
+
+    // After today's sunset (or no valid today events): fetch tomorrow sunrise
+    const tomorrow = new Date(today.getTime() + 24*60*60*1000);
+    const tomorrowStr = toYYYYMMDD(tomorrow);
+    fetchSunForDate(lat, lon, tomorrowStr, function(err2, tmrData) {
+      if (!err2 && tmrData && tmrData.sunriseIso) {
+        latestData.sunEventStr = formatIsoToLocalHHMM(tmrData.sunriseIso);
+``      } else if (tmrData && tmrData.sunsetIso) {
+        // Extremely rare: if sunrise is missing but sunset exists (polar cases)
+        latestData.sunEventStr = formatIsoToLocalHHMM(tmrData.sunsetIso);
+      } else {
+        latestData.sunEventStr = '--:--';
+      }
+      maybeSend();
+    });
+  });
 }
 
 function requestWeather() {
@@ -355,9 +406,9 @@ function requestWeather() {
   navigator.geolocation.getCurrentPosition(
     function(pos) {
       console.log("Got location: " + pos.coords.latitude + ", " + pos.coords.longitude);
-      resetLatestData(); 
-      fetchWeather(pos.coords.latitude, pos.coords.longitude);  
-      fetchSunTimes(pos.coords.latitude, pos.coords.longitude); 
+      resetLatestData();
+      fetchWeather(pos.coords.latitude, pos.coords.longitude);   
+      fetchSunNextEvent(pos.coords.latitude, pos.coords.longitude); 
     },
     function(err) {
       console.log("Location error: " + JSON.stringify(err));
