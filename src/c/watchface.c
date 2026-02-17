@@ -23,6 +23,22 @@ static char s_weather_row[40];
 static int32_t s_last_uv = -1;
 static int32_t s_last_precip = -1;
 
+static bool s_is_obstructed = false;
+
+#define TOP_MARGIN_NORMAL        20
+#define TOP_MARGIN_OBSTRUCTED    5
+
+#define TIME_NUDGE_OBSTRUCTED    5
+
+#define GAP_TIME_TO_DATE_NORMAL  40
+#define GAP_TIME_TO_DATE_OBS     43
+
+// We hide the weather row entirely when obstructed
+#define GAP_DATE_TO_WEATHER      34 
+
+#define ICON_W 32
+#define ICON_H 32
+
 // ---------- Frame ----------
 static void frame_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
@@ -97,10 +113,8 @@ static void layout_top_row(void) {
   if (!s_window) return;
 
   Layer *root = window_get_root_layer(s_window);
-  GRect bounds = layer_get_bounds(root);
-
-  const int ICON_W = 32, ICON_H = 32;
-  const int MARGIN_TOP = 20;
+  GRect bounds = layer_get_unobstructed_bounds(root);
+  
   const int GAP = 6;
 
   bool show_uv = (s_last_uv > 3);
@@ -113,8 +127,10 @@ static void layout_top_row(void) {
   if (show_uv)     total_w += GAP + ICON_W;
   if (show_precip) total_w += GAP + precip_w;
 
+  // int x = bounds.origin.x + (bounds.size.w - total_w) / 2;
   int x = (bounds.size.w - total_w) / 2;
-  int y = MARGIN_TOP;
+  int y = bounds.origin.y +
+      (s_is_obstructed ? TOP_MARGIN_OBSTRUCTED : TOP_MARGIN_NORMAL);
 
   layer_set_frame(bitmap_layer_get_layer(icon_layer), GRect(x, y, ICON_W, ICON_H));
   x += ICON_W;
@@ -145,6 +161,53 @@ static void layout_top_row(void) {
   }
 }
 
+static void relayout_all(void) {
+  if (!s_window) return;
+
+  Layer *root = window_get_root_layer(s_window);
+  GRect full   = layer_get_bounds(root);
+  GRect unob   = layer_get_unobstructed_bounds(root);
+
+  // Are we obstructed? (e.g., Timeline Quick View showing)
+  s_is_obstructed = (unob.size.h < full.size.h);
+
+  layer_set_frame(frame_layer, unob);
+
+  const int margin_top = s_is_obstructed ? TOP_MARGIN_OBSTRUCTED : TOP_MARGIN_NORMAL;
+
+  int y = unob.origin.y + margin_top;
+
+  // Time layer
+  const int time_y = (y + ICON_H) - (s_is_obstructed ? TIME_NUDGE_OBSTRUCTED : 0);
+  layer_set_frame(text_layer_get_layer(time_layer),
+                  GRect(unob.origin.x, time_y, unob.size.w, 46));
+
+  // Date layer
+  const int gap_time_to_date = s_is_obstructed ? GAP_TIME_TO_DATE_OBS : GAP_TIME_TO_DATE_NORMAL;
+  const int date_y = time_y + gap_time_to_date;
+  layer_set_frame(text_layer_get_layer(date_layer),
+                  GRect(unob.origin.x, date_y, unob.size.w, 28));
+
+  // Weather row: hide when obstructed
+  if (s_is_obstructed) {
+    layer_set_hidden(text_layer_get_layer(weather_row_layer), true);
+  } else {
+    layer_set_hidden(text_layer_get_layer(weather_row_layer), false);
+    const int weather_y = date_y + GAP_DATE_TO_WEATHER;
+    layer_set_frame(text_layer_get_layer(weather_row_layer),
+                    GRect(unob.origin.x, weather_y, unob.size.w, 24));
+  }
+
+  // Battery 
+  layer_set_frame(battery_layer,
+                  GRect(unob.origin.x + unob.size.w - 20, unob.origin.y + 6, 18, 10));
+
+  layout_top_row();
+
+  layer_mark_dirty(frame_layer);
+  layer_mark_dirty(window_get_root_layer(s_window));
+}
+
 static void weather_on_uv(int32_t uv) {
   s_last_uv = uv;
   layout_top_row();
@@ -162,23 +225,18 @@ static void weather_on_precip(int32_t mm) {
 }
 
 // ---------- Window ----------
-
 static void window_load(Window *window) {
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
 
   window_set_background_color(window, GColorBlack);
 
+  // Frame layer starts as full window; relayout_all() will shrink it if needed
   frame_layer = layer_create(bounds);
   layer_set_update_proc(frame_layer, frame_update_proc);
   layer_add_child(root, frame_layer);
 
-  const int ICON_W = 32, ICON_H = 32;
-  const int MARGIN_TOP = 20;
-
-  const int icon_x = (bounds.size.w - ICON_W) / 2;
-  const int icon_y = MARGIN_TOP;
-  icon_layer = bitmap_layer_create(GRect(icon_x, icon_y, ICON_W, ICON_H));
+  icon_layer = bitmap_layer_create(GRect(0, 0, ICON_W, ICON_H));
   bitmap_layer_set_background_color(icon_layer, GColorClear);
   bitmap_layer_set_compositing_mode(icon_layer, GCompOpSet);
 
@@ -187,24 +245,20 @@ static void window_load(Window *window) {
   bitmap_layer_set_compositing_mode(uv_icon_layer, GCompOpSet);
   layer_set_hidden(bitmap_layer_get_layer(uv_icon_layer), true);
 
-  const int time_y = icon_y + ICON_H;
-  time_layer = text_layer_create(GRect(0, time_y, bounds.size.w, 46));
+  time_layer = text_layer_create(GRect(0, 0, bounds.size.w, 46));
   text_layer_set_background_color(time_layer, GColorClear);
   text_layer_set_text_color(time_layer, GColorWhite);
   text_layer_set_font(time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
 
-  const int row3_y = time_y + 40;
-
-  date_layer = text_layer_create(GRect(0, row3_y, bounds.size.w, 28));
+  date_layer = text_layer_create(GRect(0, 0, bounds.size.w, 28));
   text_layer_set_background_color(date_layer, GColorClear);
   text_layer_set_text_color(date_layer, GColorWhite);
   text_layer_set_font(date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(date_layer, GTextAlignmentCenter);
   text_layer_set_text(date_layer, "");
 
-  const int weather_row_y = row3_y + 34;
-  weather_row_layer = text_layer_create(GRect(0, weather_row_y, bounds.size.w, 24));
+  weather_row_layer = text_layer_create(GRect(0, 0, bounds.size.w, 24));
   text_layer_set_background_color(weather_row_layer, GColorClear);
   text_layer_set_text_color(weather_row_layer, GColorWhite);
   text_layer_set_font(weather_row_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
@@ -219,16 +273,15 @@ static void window_load(Window *window) {
   text_layer_set_text(precip_layer, "");
   layer_set_hidden(text_layer_get_layer(precip_layer), true);
 
-  battery_layer = layer_create(GRect(bounds.size.w - 20, 6, 18, 10));
+  battery_layer = layer_create(GRect(0, 0, 18, 10)); // position set in relayout_all
   layer_set_update_proc(battery_layer, battery_update_proc);
 
   layer_add_child(root, bitmap_layer_get_layer(icon_layer));
   layer_add_child(root, bitmap_layer_get_layer(uv_icon_layer));
   layer_add_child(root, text_layer_get_layer(precip_layer));
-
   layer_add_child(root, text_layer_get_layer(time_layer));
   layer_add_child(root, text_layer_get_layer(date_layer));
-  layer_add_child(root, text_layer_get_layer(weather_row_layer)); 
+  layer_add_child(root, text_layer_get_layer(weather_row_layer));
   layer_add_child(root, battery_layer);
 
   weather_init(
@@ -236,12 +289,13 @@ static void window_load(Window *window) {
     weather_on_temp,
     weather_on_uv,
     weather_on_precip,
-    weather_on_sun_event  
+    weather_on_sun_event
   );
 
   update_display();
-  update_weather_row(); 
-  layout_top_row();
+  update_weather_row();
+
+  relayout_all();
 }
 
 static void window_unload(Window *window) {
@@ -264,7 +318,6 @@ static void window_unload(Window *window) {
 }
 
 // ---------- Init ----------
-
 static void send_weather_refresh(void) {
   DictionaryIterator *iter;
   AppMessageResult res = app_message_outbox_begin(&iter);
@@ -291,6 +344,17 @@ static void bt_handler(bool connected) {
   }
 }
 
+static void on_unobstructed_will_change(GRect final_unobstructed_screen_area, void *ctx) {
+}
+
+static void on_unobstructed_change(AnimationProgress progress, void *ctx) {
+  relayout_all();
+}
+
+static void on_unobstructed_did_change(void *ctx) {
+  relayout_all();
+}
+
 static void init(void) {
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers){
@@ -298,6 +362,13 @@ static void init(void) {
     .unload = window_unload
   });
   window_stack_push(s_window, true);
+
+  UnobstructedAreaHandlers ua = {
+    .will_change = on_unobstructed_will_change,
+    .change      = on_unobstructed_change,
+    .did_change  = on_unobstructed_did_change
+  };
+  unobstructed_area_service_subscribe(ua, NULL);
 
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   connection_service_subscribe((ConnectionHandlers){ .pebble_app_connection_handler = bt_handler });
@@ -307,6 +378,7 @@ static void init(void) {
 }
 
 static void deinit(void) {
+  unobstructed_area_service_unsubscribe();
   window_destroy(s_window);
 }
 
