@@ -1,21 +1,19 @@
 {
-  "name": "watchface",
+  "name": "Minimal Weather",
   "author": "sofusa",
   "version": "1.0.0",
   "keywords": [
     "pebble-app"
   ],
-  "private": true,
+  "private": false,
   "dependencies": {},
   "pebble": {
-    "displayName": "weather",
+    "displayName": "Minimal Weather",
     "uuid": "5ccb3039-b36b-464d-bed4-cb12dee9e470",
     "sdkVersion": "3",
     "enableMultiJS": true,
     "targetPlatforms": [
-      "aplite",
-      "basalt",
-      "diorite"
+      "basalt"
     ],
     "watchapp": {
       "watchface": true
@@ -45,53 +43,178 @@
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_QUESTION_DARK",
-          "file": "images/question_dark.png"
+          "name": "IMAGE_EMPTY",
+          "file": "images/empty.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_SUNNY_DARK",
-          "file": "images/sunny_day_dark.png"
+          "name": "IMAGE_CLEAR_SKY_DAY",
+          "file": "images/clear_sky_day.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_PARTLY_CLOUDY_DARK",
-          "file": "images/partly_cloudy_dark.png"
+          "name": "IMAGE_CLEAR_SKY_NIGHT",
+          "file": "images/clear_sky_night.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_PARTLY_CLOUDY_NIGHT_DARK",
-          "file": "images/partly_cloudy_night_dark.png"
+          "name": "IMAGE_CLOUDY",
+          "file": "images/cloudy.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_CLOUDY_DARK",
-          "file": "images/cloudy_weather_dark.png"
+          "name": "IMAGE_FOG",
+          "file": "images/fog.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_HEAVY_RAIN_DARK",
-          "file": "images/heavy_rain_dark.png"
+          "name": "IMAGE_HEAVY_RAIN",
+          "file": "images/heavy_rain.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_HEAVY_SNOW_DARK",
-          "file": "images/heavy_snow_dark.png"
+          "name": "IMAGE_HEAVY_RAIN_SHOWERS_DAY",
+          "file": "images/heavy_rain_showers_day.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_RAIN_SNOW_DARK",
-          "file": "images/raining_and_snowing_dark.png"
+          "name": "IMAGE_HEAVY_RAIN_SHOWERS_NIGHT",
+          "file": "images/heavy_rain_showers_night.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_THUNDERSTORM_DARK",
-          "file": "images/thunderstorm_dark.png"
+          "name": "IMAGE_LIGHT_RAIN",
+          "file": "images/light_rain.png"
         },
         {
           "type": "bitmap",
-          "name": "IMAGE_CLEAR_NIGHT_DARK",
-          "file": "images/clear_night_dark.png"
+          "name": "IMAGE_LIGHT_RAIN_SHOWERS_DAY",
+          "file": "images/light_rain_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_LIGHT_RAIN_SHOWERS_NIGHT",
+          "file": "images/light_rain_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_LIGHT_SLEET_SHOWERS_DAY",
+          "file": "images/light_sleet_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_LIGHT_SLEET_SHOWERS_NIGHT",
+          "file": "images/light_sleet_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_LIGHT_SNOW",
+          "file": "images/light_snow.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_LIGHT_SNOW_SHOWERS_DAY",
+          "file": "images/light_snow_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_NIGHT_SNOW_SHOWERS_NIGHT",
+          "file": "images/night_snow_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_PARTLY_CLOUDED_DAY",
+          "file": "images/partly_clouded_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_PARTLY_CLOUDED_NIGHT",
+          "file": "images/partly_clouded_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_RAIN_AND_THUNDER",
+          "file": "images/rain_and_thunder.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_RAIN_SHOWERS_AND_THUNDER_DAY",
+          "file": "images/rain_showers_and_thunder_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_RAIN_SHOWERS_AND_THUNDER_NIGHT",
+          "file": "images/rain_showers_and_thunder_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_RAIN_SHOWERS_DAY",
+          "file": "images/rain_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_RAIN_SHOWERS_NIGHT",
+          "file": "images/rain_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SNOW_AND_THUNDER",
+          "file": "images/snow_and_thunder.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SLEET",
+          "file": "images/sleet.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SLEET_SHOWERS_DAY",
+          "file": "images/sleet_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SLEET_SHOWERS_NIGHT",
+          "file": "images/sleet_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SNOW",
+          "file": "images/snow.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SNOW_SHOWERS_DAY",
+          "file": "images/snow_showers_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_SNOW_SHOWERS_NIGHT",
+          "file": "images/snow_showers_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_THUNDER",
+          "file": "images/thunder.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_THUNDER_AND_SNOW_DAY",
+          "file": "images/thunder_and_snow_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_THUNDER_AND_SNOW_NIGHT",
+          "file": "images/thunder_and_snow_night.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_THUNDER_DAY",
+          "file": "images/thunder_day.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_THUNDER_NIGHT",
+          "file": "images/thunder_night.png"
         }
       ]
     }

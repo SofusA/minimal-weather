@@ -5,7 +5,7 @@
 #define TOP_MARGIN_NORMAL        20
 #define TOP_MARGIN_OBSTRUCTED     5
 
-#define TIME_NUDGE_OBSTRUCTED     5
+#define TIME_NUDGE 5
 
 #define GAP_TIME_TO_DATE_NORMAL  40
 #define GAP_TIME_TO_DATE_OBS     43
@@ -13,8 +13,8 @@
 // We hide the weather row entirely when obstructed
 #define GAP_DATE_TO_WEATHER      34
 
-#define ICON_W 32
-#define ICON_H 32
+#define ICON_W 40
+#define ICON_H 40
 
 // ---------- Internal state ----------
 struct Ui {
@@ -26,8 +26,8 @@ struct Ui {
   TextLayer   *date_layer;
   TextLayer   *weather_row_layer;
 
-  BitmapLayer *icon_layer;    // Main weather icon
-  BitmapLayer *uv_icon_layer; // Optional UV icon
+  BitmapLayer *icon_layer;    
+  BitmapLayer *uv_icon_layer; 
   GBitmap     *uv_icon_bitmap;
 
   TextLayer   *precip_layer;  // Optional "mm" column (two-line)
@@ -38,7 +38,6 @@ struct Ui {
   BitmapLayer *batt_icon_layer;
   GBitmap     *batt_icon_bitmap;
 
-  // Small scratch buffers; caller owns authoritative strings
   char weather_row_buf[40];
   char precip_buf[16];
 };
@@ -98,7 +97,7 @@ static void prv_layout_top_row(Ui *ui, int32_t last_uv, int32_t last_precip, boo
   if (show_uv) {
     x += GAP;
     if (!ui->uv_icon_bitmap) {
-      ui->uv_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SUNNY_DARK);
+      ui->uv_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEAR_SKY_DAY);
       bitmap_layer_set_bitmap(ui->uv_icon_layer, ui->uv_icon_bitmap);
       bitmap_layer_set_background_color(ui->uv_icon_layer, GColorClear);
       bitmap_layer_set_compositing_mode(ui->uv_icon_layer, GCompOpSet);
@@ -130,7 +129,7 @@ static void prv_relayout_all(Ui *ui, bool is_obstructed, int32_t last_uv, int32_
   int y = unob.origin.y + margin_top;
 
   // Time layer
-  const int time_y = (y + ICON_H) - (is_obstructed ? TIME_NUDGE_OBSTRUCTED : 0);
+  const int time_y = y + ICON_H - TIME_NUDGE;
   layer_set_frame(text_layer_get_layer(ui->time_layer),
                   GRect(unob.origin.x, time_y, unob.size.w, 46));
 
@@ -153,12 +152,13 @@ static void prv_relayout_all(Ui *ui, bool is_obstructed, int32_t last_uv, int32_
   prv_layout_top_row(ui, last_uv, last_precip, is_obstructed);
 
   // Status icons (TL: BT, TR: battery)
-  const int pad = 6;
+  const int x_pad = 8;
+  const int y_pad = 5;
   layer_set_frame(bitmap_layer_get_layer(ui->bt_icon_layer),
-                  GRect(unob.origin.x + pad, unob.origin.y + pad, 24, 24));
+                  GRect(unob.origin.x + x_pad, unob.origin.y + y_pad, 24, 24));
 
   layer_set_frame(bitmap_layer_get_layer(ui->batt_icon_layer),
-                  GRect(unob.origin.x + unob.size.w - pad - 24, unob.origin.y + pad, 24, 24));
+                  GRect(unob.origin.x + unob.size.w - x_pad - 24, unob.origin.y + y_pad, 24, 24));
 
   layer_mark_dirty(ui->frame_layer);
   layer_mark_dirty(prv_root(ui));
@@ -254,31 +254,25 @@ Ui* ui_create(Window *window) {
 void ui_destroy(Ui *ui) {
   if (!ui) return;
 
-  // Destroy text layers
   text_layer_destroy(ui->time_layer);
   text_layer_destroy(ui->date_layer);
   text_layer_destroy(ui->weather_row_layer);
 
-  // Destroy frame layer
   layer_destroy(ui->frame_layer);
 
-  // Destroy status icons
   if (ui->bt_icon_bitmap) gbitmap_destroy(ui->bt_icon_bitmap);
   if (ui->batt_icon_bitmap) gbitmap_destroy(ui->batt_icon_bitmap);
   bitmap_layer_destroy(ui->bt_icon_layer);
   bitmap_layer_destroy(ui->batt_icon_layer);
 
-  // UV icon
   if (ui->uv_icon_bitmap) {
     gbitmap_destroy(ui->uv_icon_bitmap);
     ui->uv_icon_bitmap = NULL;
   }
   bitmap_layer_destroy(ui->uv_icon_layer);
 
-  // Precip
   text_layer_destroy(ui->precip_layer);
 
-  // Main icon (bitmap owned by weather.c)
   bitmap_layer_destroy(ui->icon_layer);
 
   free(ui);
