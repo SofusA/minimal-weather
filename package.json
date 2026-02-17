@@ -35,6 +35,16 @@
       "media": [
         {
           "type": "bitmap",
+          "name": "IMAGE_NO_SIGNAL",
+          "file": "images/no_signal.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BATTERY_LOW",
+          "file": "images/battery_low.png"
+        },
+        {
+          "type": "bitmap",
           "name": "IMAGE_QUESTION_DARK",
           "file": "images/question_dark.png"
         },

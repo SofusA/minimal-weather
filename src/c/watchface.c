@@ -7,12 +7,16 @@ static Window *s_window;
 static TextLayer   *time_layer;
 static TextLayer   *date_layer;         
 static TextLayer   *weather_row_layer;  
-static Layer       *battery_layer;
 static Layer       *frame_layer;
 static BitmapLayer *icon_layer;
 static BitmapLayer *uv_icon_layer;
 static GBitmap     *uv_icon_bitmap;
 static TextLayer   *precip_layer;
+
+static BitmapLayer *s_bt_icon_layer;
+static GBitmap     *s_bt_icon_bitmap;
+static BitmapLayer *s_batt_icon_layer;
+static GBitmap     *s_batt_icon_bitmap;
 
 static char time_buffer[6];
 static char date_buffer[20];           
@@ -22,6 +26,9 @@ static char s_weather_row[40];
 
 static int32_t s_last_uv = -1;
 static int32_t s_last_precip = -1;
+
+static bool s_bt_connected = true;
+static int  s_batt_percent = 100;
 
 static bool s_is_obstructed = false;
 
@@ -52,15 +59,6 @@ static void frame_update_proc(Layer *layer, GContext *ctx) {
   graphics_draw_round_rect(ctx, r1, 2);
   graphics_draw_round_rect(ctx, r2, 2);
   graphics_draw_round_rect(ctx, r3, 2);
-}
-
-// ---------- Battery ----------
-static void battery_update_proc(Layer *layer, GContext *ctx) {
-  BatteryChargeState state = battery_state_service_peek();
-  if (state.charge_percent >= 25) return;
-  graphics_context_set_stroke_color(ctx, GColorWhite);
-  graphics_draw_rect(ctx, GRect(0, 0, 14, 8));
-  graphics_draw_rect(ctx, GRect(14, 2, 2, 4));
 }
 
 // ---------- Weather Row (temp + sun) ----------
@@ -168,7 +166,6 @@ static void relayout_all(void) {
   GRect full   = layer_get_bounds(root);
   GRect unob   = layer_get_unobstructed_bounds(root);
 
-  // Are we obstructed? (e.g., Timeline Quick View showing)
   s_is_obstructed = (unob.size.h < full.size.h);
 
   layer_set_frame(frame_layer, unob);
@@ -188,7 +185,7 @@ static void relayout_all(void) {
   layer_set_frame(text_layer_get_layer(date_layer),
                   GRect(unob.origin.x, date_y, unob.size.w, 28));
 
-  // Weather row: hide when obstructed
+  // Weather row
   if (s_is_obstructed) {
     layer_set_hidden(text_layer_get_layer(weather_row_layer), true);
   } else {
@@ -198,11 +195,17 @@ static void relayout_all(void) {
                     GRect(unob.origin.x, weather_y, unob.size.w, 24));
   }
 
-  // Battery 
-  layer_set_frame(battery_layer,
-                  GRect(unob.origin.x + unob.size.w - 20, unob.origin.y + 6, 18, 10));
-
   layout_top_row();
+
+  const int pad = 6;
+
+  // Top-left: "No Signal"
+  layer_set_frame(bitmap_layer_get_layer(s_bt_icon_layer),
+                  GRect(unob.origin.x + pad, unob.origin.y + pad, 24, 24));
+
+  // Top-right: "Low Battery"
+  layer_set_frame(bitmap_layer_get_layer(s_batt_icon_layer),
+                  GRect(unob.origin.x + unob.size.w - pad - 24, unob.origin.y + pad, 24, 24));
 
   layer_mark_dirty(frame_layer);
   layer_mark_dirty(window_get_root_layer(s_window));
@@ -273,16 +276,31 @@ static void window_load(Window *window) {
   text_layer_set_text(precip_layer, "");
   layer_set_hidden(text_layer_get_layer(precip_layer), true);
 
-  battery_layer = layer_create(GRect(0, 0, 18, 10)); // position set in relayout_all
-  layer_set_update_proc(battery_layer, battery_update_proc);
+  // --- Bluetooth "No Signal" icon (top-left) ---
+  s_bt_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NO_SIGNAL);
+  s_bt_icon_layer = bitmap_layer_create(GRect(0, 0, 24, 24)); 
+  bitmap_layer_set_background_color(s_bt_icon_layer, GColorClear);
+  bitmap_layer_set_compositing_mode(s_bt_icon_layer, GCompOpSet);
+  bitmap_layer_set_bitmap(s_bt_icon_layer, s_bt_icon_bitmap);  
+  layer_set_hidden(bitmap_layer_get_layer(s_bt_icon_layer), true); // hidden by default
 
+  // --- Battery "Low" icon (top-right) ---
+  s_batt_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_LOW);
+  s_batt_icon_layer = bitmap_layer_create(GRect(0, 0, 24, 24)); 
+  bitmap_layer_set_background_color(s_batt_icon_layer, GColorClear);
+  bitmap_layer_set_compositing_mode(s_batt_icon_layer, GCompOpSet);
+  bitmap_layer_set_bitmap(s_batt_icon_layer, s_batt_icon_bitmap);
+  layer_set_hidden(bitmap_layer_get_layer(s_batt_icon_layer), true); // hidden by default
+
+  // Add to root *above* frame so they stay visible
   layer_add_child(root, bitmap_layer_get_layer(icon_layer));
   layer_add_child(root, bitmap_layer_get_layer(uv_icon_layer));
   layer_add_child(root, text_layer_get_layer(precip_layer));
   layer_add_child(root, text_layer_get_layer(time_layer));
   layer_add_child(root, text_layer_get_layer(date_layer));
   layer_add_child(root, text_layer_get_layer(weather_row_layer));
-  layer_add_child(root, battery_layer);
+  layer_add_child(root, bitmap_layer_get_layer(s_bt_icon_layer));
+  layer_add_child(root, bitmap_layer_get_layer(s_batt_icon_layer));
 
   weather_init(
     icon_layer,
@@ -304,7 +322,11 @@ static void window_unload(Window *window) {
   text_layer_destroy(weather_row_layer);
 
   layer_destroy(frame_layer);
-  layer_destroy(battery_layer);
+
+  if (s_bt_icon_bitmap)   gbitmap_destroy(s_bt_icon_bitmap);
+  if (s_batt_icon_bitmap) gbitmap_destroy(s_batt_icon_bitmap);
+  bitmap_layer_destroy(s_bt_icon_layer);
+  bitmap_layer_destroy(s_batt_icon_layer);
 
   if (uv_icon_bitmap) {
     gbitmap_destroy(uv_icon_bitmap);
@@ -339,9 +361,20 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void bt_handler(bool connected) {
+  s_bt_connected = connected;
+
+  layer_set_hidden(bitmap_layer_get_layer(s_bt_icon_layer), connected);
+
   if (connected) {
     send_weather_refresh();
   }
+}
+
+static void battery_handler(BatteryChargeState state) {
+  s_batt_percent = state.charge_percent;
+
+  bool low = (state.charge_percent <= 25) && !state.is_charging;
+  layer_set_hidden(bitmap_layer_get_layer(s_batt_icon_layer), !low);
 }
 
 static void on_unobstructed_will_change(GRect final_unobstructed_screen_area, void *ctx) {
@@ -373,12 +406,16 @@ static void init(void) {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   connection_service_subscribe((ConnectionHandlers){ .pebble_app_connection_handler = bt_handler });
 
+  battery_state_service_subscribe(battery_handler);
+  battery_handler(battery_state_service_peek());
+
   app_message_register_inbox_received(inbox_received_handler);
   app_message_open(256, 256);
 }
 
 static void deinit(void) {
   unobstructed_area_service_unsubscribe();
+  battery_state_service_unsubscribe();
   window_destroy(s_window);
 }
 
