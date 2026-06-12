@@ -1,6 +1,6 @@
 var getImageId = require("./symbolMap");
 
-function sendDataToPebble(temp, icon_code, uv, prec, min, max) {
+function sendDataToPebble(temp, icon_code, uv, prec, forecast) {
   var icon = getImageId(icon_code);
 
   Pebble.sendAppMessage({
@@ -8,8 +8,7 @@ function sendDataToPebble(temp, icon_code, uv, prec, min, max) {
     WEATHER_ICON: icon,
     WEATHER_UV: uv,
     WEATHER_PRECIPITATION: prec,
-    WEATHER_MIN: min,
-    WEATHER_MAX: max,
+    WEATHER_FORECAST: forecast
   });
 }
 
@@ -52,31 +51,38 @@ function fetchWeather(lat, lon) {
           var icon = data_object.next_1_hours.summary.symbol_code;
           var prec = data_object.next_6_hours.details.precipitation_amount;
 
-          var min = data_object.next_6_hours.details.air_temperature_min;
-          var max = data_object.next_6_hours.details.air_temperature_max;
-
           var temp = Math.round(t);
           var uv_round = Math.round(uv);
           var precipitation = Math.round(prec);
-          var min_round = Math.round(min);
-          var max_round = Math.round(max);
 
           console.log("Sending data to pebble");
           console.log(temp);
           console.log(icon);
           console.log(uv_round);
           console.log(precipitation);
-          console.log(min_round);
-          console.log(max_round);
 
-          sendDataToPebble(
-            temp,
-            icon,
-            uv_round,
-            precipitation,
-            min_round,
-            max_round
-          );
+          var forecastParts = [];
+
+          for (var i = 0; i <= 12; i++) {
+            var data_i = data.properties.timeseries[i].data;
+
+            var temp_i = Math.round(data_i.instant.details.air_temperature);
+
+            var precip_i = 0;
+
+            if (data_i.next_1_hours) {
+              precip_i = Math.round(
+                data_i.next_1_hours.details.precipitation_amount
+              );
+            }
+
+            forecastParts.push(temp_i + "," + precip_i);
+          }
+
+          var forecastString = forecastParts.join("|");
+          console.log(forecastString);
+
+          sendDataToPebble(temp, icon, uv_round, precipitation, forecastString);
         } catch (err) {
           console.log("JSON parse error: " + err);
         }
