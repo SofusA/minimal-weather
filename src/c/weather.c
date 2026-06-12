@@ -6,7 +6,6 @@ static GBitmap     *s_icon_bitmap = NULL;
 
 static WeatherUpdateCallback s_on_update = NULL;
 
-// Ordered must match your JS ImageId
 static const uint32_t WEATHER_RES_IDS[] = {
   RESOURCE_ID_IMAGE_EMPTY,
   RESOURCE_ID_IMAGE_CLEAR_SKY_DAY,
@@ -68,10 +67,6 @@ void set_weather_icon(int32_t idx) {
 }
 
 void weather_inbox_parse(DictionaryIterator *iter) {
-  // Messages are sent in bulk; parse everything and deliver once.
-  Tuple *cur_t  = dict_find(iter, MESSAGE_KEY_WEATHER_TEMPERATURE);
-  Tuple *max_t  = dict_find(iter, MESSAGE_KEY_WEATHER_MAX);
-  Tuple *min_t  = dict_find(iter, MESSAGE_KEY_WEATHER_MIN);
   Tuple *uv_t   = dict_find(iter, MESSAGE_KEY_WEATHER_UV);
   Tuple *pr_t   = dict_find(iter, MESSAGE_KEY_WEATHER_PRECIPITATION);
   Tuple *icon_t = dict_find(iter, MESSAGE_KEY_WEATHER_ICON);
@@ -81,12 +76,9 @@ void weather_inbox_parse(DictionaryIterator *iter) {
   }
 
   if (s_on_update) {
-    int32_t cur = cur_t ? cur_t->value->int32 : 0;
-    int32_t max = max_t ? max_t->value->int32 : 0;
-    int32_t min = min_t ? min_t->value->int32 : 0;
-    int32_t uv  = uv_t  ? uv_t->value->int32  : 0;
-    int32_t pr  = pr_t  ? pr_t->value->int32  : 0;
-    s_on_update(cur, max, min, uv, pr);
+    int32_t uv = uv_t ? uv_t->value->int32 : 0;
+    int32_t pr = pr_t ? pr_t->value->int32 : 0;
+    s_on_update(uv, pr);
   }
 }
 
@@ -102,6 +94,7 @@ void weather_deinit(void) {
     gbitmap_destroy(s_icon_bitmap);
     s_icon_bitmap = NULL;
   }
+
   s_icon_layer = NULL;
   s_on_update = NULL;
 }

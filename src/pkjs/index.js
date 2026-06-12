@@ -1,10 +1,9 @@
 var getImageId = require("./symbolMap");
 
-function sendDataToPebble(temp, icon_code, uv, prec, forecast) {
+function sendDataToPebble(icon_code, uv, prec, forecast) {
   var icon = getImageId(icon_code);
 
   Pebble.sendAppMessage({
-    WEATHER_TEMPERATURE: temp,
     WEATHER_ICON: icon,
     WEATHER_UV: uv,
     WEATHER_PRECIPITATION: prec,
@@ -32,6 +31,7 @@ Pebble.addEventListener("appmessage", function () {
 });
 
 function fetchWeather(lat, lon) {
+  console.log("Featching weather");
   var url = `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`;
 
   var xhr = new XMLHttpRequest();
@@ -42,6 +42,7 @@ function fetchWeather(lat, lon) {
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status >= 200 && xhr.status < 300) {
+        console.log("Got resonse");
         try {
           var data = JSON.parse(xhr.responseText);
           var data_object = data.properties.timeseries[0].data;
@@ -51,12 +52,10 @@ function fetchWeather(lat, lon) {
           var icon = data_object.next_1_hours.summary.symbol_code;
           var prec = data_object.next_6_hours.details.precipitation_amount;
 
-          var temp = Math.round(t);
           var uv_round = Math.round(uv);
           var precipitation = Math.round(prec);
 
           console.log("Sending data to pebble");
-          console.log(temp);
           console.log(icon);
           console.log(uv_round);
           console.log(precipitation);
@@ -82,10 +81,19 @@ function fetchWeather(lat, lon) {
           var forecastString = forecastParts.join("|");
           console.log(forecastString);
 
-          sendDataToPebble(temp, icon, uv_round, precipitation, forecastString);
+          sendDataToPebble(icon, uv_round, precipitation, forecastString);
         } catch (err) {
           console.log("JSON parse error: " + err);
         }
+      } else {
+        console.log("Got bad status code: " + xhr.status);
+        var icon = "rain";
+        var uv_round = 2;
+        var precipitation = 4;
+        var forecastString = "18,0|19,0|19,0|18,0|18,0|18,0|17,1|17,5|16,2|15,1|15,0|15,0|15,0";
+
+        sendDataToPebble(icon, uv_round, precipitation, forecastString);
+
       }
     }
   };

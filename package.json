@@ -21,11 +21,8 @@
     "messageKeys": [
       "WEATHER_REFRESH",
       "WEATHER_ICON",
-      "WEATHER_TEMPERATURE",
       "WEATHER_UV",
       "WEATHER_PRECIPITATION",
-      "WEATHER_MIN",
-      "WEATHER_MAX",
       "WEATHER_FORECAST"
     ],
     "capabilities": [
