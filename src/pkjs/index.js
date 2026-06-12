@@ -23,10 +23,12 @@ function requestWeather() {
 }
 
 Pebble.addEventListener("ready", function () {
+  console.log("Ready");
   requestWeather();
 });
 
 Pebble.addEventListener("appmessage", function () {
+  console.log("appmessage");
   requestWeather();
 });
 
@@ -53,11 +55,19 @@ function fetchWeather(lat, lon) {
           var min = data_object.next_6_hours.details.air_temperature_min;
           var max = data_object.next_6_hours.details.air_temperature_max;
 
-          const temp = Math.round(t);
-          const uv_round = Math.round(uv);
-          const precipitation = Math.round(prec);
-          const min_round = Math.round(min);
-          const max_round = Math.round(max);
+          var temp = Math.round(t);
+          var uv_round = Math.round(uv);
+          var precipitation = Math.round(prec);
+          var min_round = Math.round(min);
+          var max_round = Math.round(max);
+
+          console.log("Sending data to pebble");
+          console.log(temp);
+          console.log(icon);
+          console.log(uv_round);
+          console.log(precipitation);
+          console.log(min_round);
+          console.log(max_round);
 
           sendDataToPebble(
             temp,
