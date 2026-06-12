@@ -201,7 +201,7 @@ Ui* ui_create(Window *window) {
   ui->time_layer = text_layer_create(GRect(0, 0, bounds.size.w, 46));
   text_layer_set_background_color(ui->time_layer, GColorClear);
   text_layer_set_text_color(ui->time_layer, GColorWhite);
-  text_layer_set_font(ui->time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_font(ui->time_layer, fonts_get_system_font(FONT_KEY_LECO_42_NUMBERS));
   text_layer_set_text_alignment(ui->time_layer, GTextAlignmentCenter);
   layer_add_child(root, text_layer_get_layer(ui->time_layer));
 
