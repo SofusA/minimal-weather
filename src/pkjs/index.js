@@ -50,7 +50,7 @@ function fetchWeather(lat, lon) {
           var t = data_object.instant.details.air_temperature;
           var uv = data_object.instant.details.ultraviolet_index_clear_sky;
           var icon = data_object.next_1_hours.summary.symbol_code;
-          var prec = data_object.next_6_hours.details.precipitation_amount;
+          var prec = data_object.next_6_hours.details.precipitation_amount_max;
 
           var uv_round = Math.round(uv);
           var precipitation = Math.round(prec);
@@ -71,7 +71,7 @@ function fetchWeather(lat, lon) {
 
             if (data_i.next_1_hours) {
               precip_i = Math.round(
-                data_i.next_1_hours.details.precipitation_amount
+                data_i.next_1_hours.details.precipitation_amount_max
               );
             }
 

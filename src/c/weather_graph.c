@@ -136,7 +136,7 @@ static void prv_update_proc(Layer *layer, GContext *ctx) {
     temp_min--;
   }
 
-  int precip_scale = prv_nice_precip_max(precip_max + 1);
+  int precip_scale = prv_nice_precip_max(precip_max);
 
   int col_w = graph_w / s_count;
   if (col_w < 1) col_w = 1;
