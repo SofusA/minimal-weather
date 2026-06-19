@@ -182,12 +182,14 @@ static void prv_update_proc(Layer *layer, GContext *ctx) {
   }
 
   GFont label_font = fonts_get_system_font(FONT_KEY_GOTHIC_14);
-  char temp_max_buf[8];
-  char temp_min_buf[8];
-  char precip_buf[8];
+  char temp_max_buf[16];
+  char temp_min_buf[16];
+  char current_temp_buf[16];
+  char precip_buf[16];
 
   snprintf(temp_max_buf, sizeof(temp_max_buf), "%d°", temp_max);
   snprintf(temp_min_buf, sizeof(temp_min_buf), "%d°", temp_min);
+  snprintf(current_temp_buf, sizeof(current_temp_buf), "%d°", s_temps[0]);
   snprintf(precip_buf, sizeof(precip_buf), "%d", precip_scale);
 
   prv_draw_outlined_text(ctx, temp_max_buf, label_font,
@@ -207,6 +209,10 @@ static void prv_update_proc(Layer *layer, GContext *ctx) {
                            GRect(0, graph_y + graph_h - 13, label_w, 16),
                            GTextAlignmentLeft);
   }
+
+  prv_draw_outlined_text(ctx, current_temp_buf, label_font,
+                         GRect(0, graph_y + 15, label_w, 16),
+                         GTextAlignmentLeft);
 }
 
 void weather_graph_init(Layer *graph_layer) {
